@@ -55,7 +55,7 @@ function CheckoutPage() {
     defaultValues: { delivery: "yandex" },
   });
 
-  if (items.length === 0) {
+  if (mounted && items.length === 0) {
     return (
       <Container className="py-20 text-center">
         <h1 className="font-display text-2xl">Корзина пуста</h1>
