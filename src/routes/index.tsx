@@ -18,7 +18,7 @@ export const Route = createFileRoute("/")({
       },
       { property: "og:title", content: "ROSA&BAROCCO — Cosmetic Lab" },
       { property: "og:description", content: "Премиальные коллоидные растворы для ухода за кожей." },
-      { property: "og:image", content: "/og-home.jpg" },
+      { property: "og:image", content: heroImage },
     ],
   }),
   component: HomePage,
