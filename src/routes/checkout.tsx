@@ -32,7 +32,7 @@ const schema = z.object({
   delivery: z.enum(["yandex", "cdek", "post"]),
   address: z.string().trim().min(3, "Адрес или пункт выдачи").max(200),
   comment: z.string().max(500).optional(),
-  agree: z.literal(true, { errorMap: () => ({ message: "Согласие обязательно" }) }),
+  agree: z.boolean().refine((v) => v === true, { message: "Согласие обязательно" }),
 });
 
 type FormValues = z.infer<typeof schema>;
