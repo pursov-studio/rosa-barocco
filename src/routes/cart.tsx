@@ -5,6 +5,7 @@ import { Container } from "@/components/common/Container";
 import { Price } from "@/components/common/Price";
 import { CartItemRow } from "@/components/cart/CartItemRow";
 import { FreeShippingProgress } from "@/components/cart/FreeShippingProgress";
+import { StickyBar } from "@/components/common/StickyBar";
 import { cartSelectors, useCart } from "@/lib/cart/store";
 
 export const Route = createFileRoute("/cart")({
@@ -101,7 +102,7 @@ function CartPage() {
       </Container>
 
       {/* Sticky mobile checkout bar */}
-      <div className="safe-bottom fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 px-4 py-2.5 backdrop-blur shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.08)] lg:hidden">
+      <StickyBar className="lg:hidden">
         <div className="flex items-center gap-3">
           <div className="flex-1">
             <div className="text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground">
@@ -116,7 +117,7 @@ function CartPage() {
             Оформить заказ
           </Link>
         </div>
-      </div>
+      </StickyBar>
     </>
   );
 }
