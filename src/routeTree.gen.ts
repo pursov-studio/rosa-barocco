@@ -9,38 +9,199 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as DeliveryRouteImport } from './routes/delivery'
+import { Route as CooperationRouteImport } from './routes/cooperation'
+import { Route as ContactsRouteImport } from './routes/contacts'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as CatalogRouteImport } from './routes/catalog'
+import { Route as CartRouteImport } from './routes/cart'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProductSlugRouteImport } from './routes/product.$slug'
+import { Route as CheckoutSuccessRouteImport } from './routes/checkout.success'
+import { Route as CatalogCategoryRouteImport } from './routes/catalog.$category'
 
+const DeliveryRoute = DeliveryRouteImport.update({
+  id: '/delivery',
+  path: '/delivery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CooperationRoute = CooperationRouteImport.update({
+  id: '/cooperation',
+  path: '/cooperation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactsRoute = ContactsRouteImport.update({
+  id: '/contacts',
+  path: '/contacts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CatalogRoute = CatalogRouteImport.update({
+  id: '/catalog',
+  path: '/catalog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CartRoute = CartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProductSlugRoute = ProductSlugRouteImport.update({
+  id: '/product/$slug',
+  path: '/product/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutSuccessRoute = CheckoutSuccessRouteImport.update({
+  id: '/success',
+  path: '/success',
+  getParentRoute: () => CheckoutRoute,
+} as any)
+const CatalogCategoryRoute = CatalogCategoryRouteImport.update({
+  id: '/$category',
+  path: '/$category',
+  getParentRoute: () => CatalogRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/cart': typeof CartRoute
+  '/catalog': typeof CatalogRouteWithChildren
+  '/checkout': typeof CheckoutRouteWithChildren
+  '/contacts': typeof ContactsRoute
+  '/cooperation': typeof CooperationRoute
+  '/delivery': typeof DeliveryRoute
+  '/catalog/$category': typeof CatalogCategoryRoute
+  '/checkout/success': typeof CheckoutSuccessRoute
+  '/product/$slug': typeof ProductSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/cart': typeof CartRoute
+  '/catalog': typeof CatalogRouteWithChildren
+  '/checkout': typeof CheckoutRouteWithChildren
+  '/contacts': typeof ContactsRoute
+  '/cooperation': typeof CooperationRoute
+  '/delivery': typeof DeliveryRoute
+  '/catalog/$category': typeof CatalogCategoryRoute
+  '/checkout/success': typeof CheckoutSuccessRoute
+  '/product/$slug': typeof ProductSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/cart': typeof CartRoute
+  '/catalog': typeof CatalogRouteWithChildren
+  '/checkout': typeof CheckoutRouteWithChildren
+  '/contacts': typeof ContactsRoute
+  '/cooperation': typeof CooperationRoute
+  '/delivery': typeof DeliveryRoute
+  '/catalog/$category': typeof CatalogCategoryRoute
+  '/checkout/success': typeof CheckoutSuccessRoute
+  '/product/$slug': typeof ProductSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/cart'
+    | '/catalog'
+    | '/checkout'
+    | '/contacts'
+    | '/cooperation'
+    | '/delivery'
+    | '/catalog/$category'
+    | '/checkout/success'
+    | '/product/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/cart'
+    | '/catalog'
+    | '/checkout'
+    | '/contacts'
+    | '/cooperation'
+    | '/delivery'
+    | '/catalog/$category'
+    | '/checkout/success'
+    | '/product/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/cart'
+    | '/catalog'
+    | '/checkout'
+    | '/contacts'
+    | '/cooperation'
+    | '/delivery'
+    | '/catalog/$category'
+    | '/checkout/success'
+    | '/product/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CartRoute: typeof CartRoute
+  CatalogRoute: typeof CatalogRouteWithChildren
+  CheckoutRoute: typeof CheckoutRouteWithChildren
+  ContactsRoute: typeof ContactsRoute
+  CooperationRoute: typeof CooperationRoute
+  DeliveryRoute: typeof DeliveryRoute
+  ProductSlugRoute: typeof ProductSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/delivery': {
+      id: '/delivery'
+      path: '/delivery'
+      fullPath: '/delivery'
+      preLoaderRoute: typeof DeliveryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cooperation': {
+      id: '/cooperation'
+      path: '/cooperation'
+      fullPath: '/cooperation'
+      preLoaderRoute: typeof CooperationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contacts': {
+      id: '/contacts'
+      path: '/contacts'
+      fullPath: '/contacts'
+      preLoaderRoute: typeof ContactsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/catalog': {
+      id: '/catalog'
+      path: '/catalog'
+      fullPath: '/catalog'
+      preLoaderRoute: typeof CatalogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cart': {
+      id: '/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof CartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +209,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/product/$slug': {
+      id: '/product/$slug'
+      path: '/product/$slug'
+      fullPath: '/product/$slug'
+      preLoaderRoute: typeof ProductSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout/success': {
+      id: '/checkout/success'
+      path: '/success'
+      fullPath: '/checkout/success'
+      preLoaderRoute: typeof CheckoutSuccessRouteImport
+      parentRoute: typeof CheckoutRoute
+    }
+    '/catalog/$category': {
+      id: '/catalog/$category'
+      path: '/$category'
+      fullPath: '/catalog/$category'
+      preLoaderRoute: typeof CatalogCategoryRouteImport
+      parentRoute: typeof CatalogRoute
+    }
   }
 }
 
+interface CatalogRouteChildren {
+  CatalogCategoryRoute: typeof CatalogCategoryRoute
+}
+
+const CatalogRouteChildren: CatalogRouteChildren = {
+  CatalogCategoryRoute: CatalogCategoryRoute,
+}
+
+const CatalogRouteWithChildren =
+  CatalogRoute._addFileChildren(CatalogRouteChildren)
+
+interface CheckoutRouteChildren {
+  CheckoutSuccessRoute: typeof CheckoutSuccessRoute
+}
+
+const CheckoutRouteChildren: CheckoutRouteChildren = {
+  CheckoutSuccessRoute: CheckoutSuccessRoute,
+}
+
+const CheckoutRouteWithChildren = CheckoutRoute._addFileChildren(
+  CheckoutRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CartRoute: CartRoute,
+  CatalogRoute: CatalogRouteWithChildren,
+  CheckoutRoute: CheckoutRouteWithChildren,
+  ContactsRoute: ContactsRoute,
+  CooperationRoute: CooperationRoute,
+  DeliveryRoute: DeliveryRoute,
+  ProductSlugRoute: ProductSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
