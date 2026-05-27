@@ -197,7 +197,7 @@ export const adminGetContent = createServerFn({ method: "POST" })
     const { data: row, error } = await supabaseAdmin
       .from("site_content").select("value").eq("key", data.key).maybeSingle();
     if (error) throw new Error(error.message);
-    return (row?.value ?? {}) as any;
+    return (row?.value ?? {}) as Record<string, any>;
   });
 
 export const adminSetContent = createServerFn({ method: "POST" })
