@@ -190,7 +190,7 @@ function ProductPage() {
       </Container>
 
       {/* Sticky bottom CTA (mobile) */}
-      <div className="safe-bottom fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 px-4 py-3 backdrop-blur sm:hidden">
+      <div className="safe-bottom fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 px-4 py-2.5 backdrop-blur shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.08)] sm:hidden">
         <div className="flex items-center gap-3">
           <QtyControl qty={qty} setQty={setQty} />
           <button
