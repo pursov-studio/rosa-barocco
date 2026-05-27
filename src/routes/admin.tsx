@@ -83,7 +83,7 @@ function AdminLayout() {
                 return (
                   <Link
                     key={n.to}
-                    to={n.to}
+                    to={n.to as any}
                     className={`rounded-full px-3 py-1.5 text-sm transition-colors ${active ? "bg-foreground text-background" : "hover:bg-muted"}`}
                   >
                     {n.label}
@@ -109,7 +109,7 @@ function AdminLayout() {
             return (
               <Link
                 key={n.to}
-                to={n.to}
+                to={n.to as any}
                 className={`whitespace-nowrap rounded-full px-3 py-1 text-xs ${active ? "bg-foreground text-background" : "bg-muted"}`}
               >
                 {n.label}
