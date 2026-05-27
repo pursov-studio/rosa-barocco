@@ -40,5 +40,5 @@ export const getSiteContent = createServerFn({ method: "GET" })
       .eq("key", data.key)
       .maybeSingle();
     if (error) throw new Error(error.message);
-    return (row?.value ?? {}) as Record<string, unknown>;
+    return (row?.value ?? {}) as any;
   });
