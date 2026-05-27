@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { ShoppingBag } from "lucide-react";
 import { Container } from "@/components/common/Container";
 import { Price } from "@/components/common/Price";
@@ -19,6 +20,12 @@ export const Route = createFileRoute("/cart")({
 function CartPage() {
   const items = useCart((s) => s.items);
   const subtotal = useCart(cartSelectors.subtotal);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) {
+    return <Container className="py-20" aria-busy="true" />;
+  }
 
   if (items.length === 0) {
     return (
