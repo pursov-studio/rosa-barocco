@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Container } from "@/components/common/Container";
 import { Price } from "@/components/common/Price";
 import { cartSelectors, useCart } from "@/lib/cart/store";
@@ -32,7 +32,7 @@ const schema = z.object({
   delivery: z.enum(["yandex", "cdek", "post"]),
   address: z.string().trim().min(3, "Адрес или пункт выдачи").max(200),
   comment: z.string().max(500).optional(),
-  agree: z.literal(true, { errorMap: () => ({ message: "Согласие обязательно" }) }),
+  agree: z.boolean().refine((v) => v === true, { message: "Согласие обязательно" }),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -43,6 +43,8 @@ function CheckoutPage() {
   const clear = useCart((s) => s.clear);
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const {
     register,
@@ -53,7 +55,7 @@ function CheckoutPage() {
     defaultValues: { delivery: "yandex" },
   });
 
-  if (items.length === 0) {
+  if (mounted && items.length === 0) {
     return (
       <Container className="py-20 text-center">
         <h1 className="font-display text-2xl">Корзина пуста</h1>

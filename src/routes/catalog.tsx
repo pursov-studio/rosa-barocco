@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Container } from "@/components/common/Container";
 import { ProductCard } from "@/components/catalog/ProductCard";
-import { categories, products } from "@/lib/catalog/seed";
+import { getCategoryBySlug, products } from "@/lib/catalog/seed";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/catalog")({
@@ -24,10 +24,20 @@ export const Route = createFileRoute("/catalog")({
 function CatalogPage() {
   const [active, setActive] = useState<string>("all");
 
-  const list =
-    active === "all"
-      ? products
-      : products.filter((p) => p.categorySlug === active);
+  const groups = [
+    { key: "all", label: "Все" },
+    { key: "platinum", label: "Платина" },
+    { key: "gold", label: "Золото" },
+    { key: "silver", label: "Серебро" },
+    { key: "sets", label: "Наборы" },
+  ] as const;
+
+  const list = products.filter((p) => {
+    if (active === "all") return true;
+    const metal = getCategoryBySlug(p.categorySlug)?.metal;
+    if (active === "sets") return metal === "mix";
+    return metal === active;
+  });
 
   return (
     <Container className="py-10 sm:py-14">
@@ -39,18 +49,13 @@ function CatalogPage() {
       </div>
 
       <div className="-mx-4 mb-8 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-        <div className="flex w-max gap-2 sm:flex-wrap">
-          <FilterChip
-            label="Все"
-            active={active === "all"}
-            onClick={() => setActive("all")}
-          />
-          {categories.map((c) => (
+        <div className="flex w-max gap-2 sm:w-auto sm:flex-wrap">
+          {groups.map((g) => (
             <FilterChip
-              key={c.slug}
-              label={c.shortName}
-              active={active === c.slug}
-              onClick={() => setActive(c.slug)}
+              key={g.key}
+              label={g.label}
+              active={active === g.key}
+              onClick={() => setActive(g.key)}
             />
           ))}
         </div>

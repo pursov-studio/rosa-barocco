@@ -16,7 +16,10 @@ const navItems = [
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const count = useCart(cartSelectors.count);
+
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -59,7 +62,7 @@ export function Header() {
             className="relative inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-muted"
           >
             <ShoppingBag className="h-5 w-5" />
-            {count > 0 && (
+            {mounted && count > 0 && (
               <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[0.65rem] font-medium text-primary-foreground">
                 {count}
               </span>
