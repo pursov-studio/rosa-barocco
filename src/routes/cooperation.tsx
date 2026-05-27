@@ -28,7 +28,7 @@ const schema = z.object({
   phone: z.string().trim().min(10, "Введите телефон").max(20).regex(/^[+\d\s()-]+$/, "Только цифры и +-()"),
   email: z.string().trim().email("Неверный email").max(120),
   partnerType: z.enum(["shop", "salon", "marketplace", "other"]),
-  comment: z.string().trim().min(5, "Расскажите подробнее").max(800),
+  comment: z.string().trim().max(800).optional(),
 });
 
 type V = z.infer<typeof schema>;
@@ -65,9 +65,12 @@ function CooperationPage() {
       <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
         <div>
           <h1 className="font-display text-3xl sm:text-4xl">Сотрудничество</h1>
+          <p className="mt-3 text-sm uppercase tracking-[0.18em] text-primary">
+            Пришлём прайс и условия в ответ на заявку
+          </p>
           <p className="mt-4 text-muted-foreground">
             Мы работаем с магазинами, салонами и партнёрами на маркетплейсах.
-            Расскажите о&nbsp;себе — пришлём прайс и&nbsp;условия.
+            Расскажите о&nbsp;себе — ответим в&nbsp;рабочие часы.
           </p>
           <ul className="mt-6 space-y-3 text-sm text-muted-foreground">
             <li className="flex gap-3"><Dot /> Оптовые поставки коллоидных растворов</li>
@@ -111,8 +114,8 @@ function CooperationPage() {
                   <option value="other">Другое</option>
                 </select>
               </Field>
-              <Field label="Комментарий" error={errors.comment?.message}>
-                <textarea className={`${inputCls} resize-none`} rows={4} {...register("comment")} />
+              <Field label="Комментарий (необязательно)" error={errors.comment?.message}>
+                <textarea className={`${inputCls} resize-none`} rows={4} placeholder="Город, объёмы, формат сотрудничества" {...register("comment")} />
               </Field>
               <button
                 type="submit"

@@ -36,24 +36,23 @@ function HomePage() {
     <div>
       {/* Hero */}
       <section className="relative overflow-hidden bg-peach/50">
-        <Container className="relative grid gap-8 py-12 md:grid-cols-2 md:items-center md:gap-10 md:py-20">
+        <Container className="relative grid gap-8 py-10 md:grid-cols-2 md:items-center md:gap-10 md:py-20">
           <div className="order-2 md:order-1">
             <div className="mb-4 text-[0.7rem] uppercase tracking-[0.25em] text-primary">
               Cosmetic Lab
             </div>
             <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl md:text-6xl">
-              Натуральные коллоидные растворы для&nbsp;ежедневного ухода
+              Натуральные коллоидные растворы серебра, золота и&nbsp;платины
             </h1>
             <p className="mt-5 max-w-md text-base text-muted-foreground">
-              Серебро, золото и платина в&nbsp;деликатной форме спрея-миста.
-              Аккуратные ритуалы для лица, тела и&nbsp;кожи рук.
+              Деликатный спрей-мист для лица, тела и&nbsp;кожи рук.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link
                 to="/catalog"
                 className="inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
               >
-                Перейти в каталог
+                Открыть каталог
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
@@ -63,6 +62,20 @@ function HomePage() {
                 Доставка и оплата
               </Link>
             </div>
+            <ul className="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">
+              <li className="inline-flex items-center gap-1.5">
+                <span className="h-1 w-1 rounded-full bg-primary" />
+                Бесплатная доставка от 1500 ₽
+              </li>
+              <li className="inline-flex items-center gap-1.5">
+                <span className="h-1 w-1 rounded-full bg-primary" />
+                Натуральный состав
+              </li>
+              <li className="inline-flex items-center gap-1.5">
+                <span className="h-1 w-1 rounded-full bg-primary" />
+                Доставка по России
+              </li>
+            </ul>
           </div>
           <div className="order-1 md:order-2">
             <div className="relative aspect-[5/4] overflow-hidden rounded-3xl md:aspect-[4/5]">
