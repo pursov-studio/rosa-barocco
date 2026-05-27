@@ -10,14 +10,14 @@ export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Админ‑панель" }] }),
 });
 
-const NAV = [
+const NAV: Array<{ to: string; label: string; exact?: boolean }> = [
   { to: "/admin", label: "Дашборд", exact: true },
   { to: "/admin/orders", label: "Заказы" },
   { to: "/admin/products", label: "Товары" },
   { to: "/admin/content", label: "Контент" },
   { to: "/admin/settings", label: "Робокасса" },
   { to: "/admin/team", label: "Команда" },
-] as const;
+];
 
 function AdminLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
