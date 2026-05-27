@@ -46,7 +46,6 @@ function CartPage() {
           </Link>
           <Link
             to="/"
-            hash="bestsellers"
             className="inline-flex items-center rounded-full border border-border px-6 py-3 text-sm hover:bg-muted"
           >
             Посмотреть бестселлеры
