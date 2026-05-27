@@ -24,7 +24,7 @@ function CartPage() {
   useEffect(() => setMounted(true), []);
 
   if (!mounted) {
-    return <Container className="py-20" aria-busy="true" />;
+    return <Container className="py-20" aria-busy="true">{null}</Container>;
   }
 
   if (items.length === 0) {
