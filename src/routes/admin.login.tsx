@@ -10,12 +10,16 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/login")({
   component: AdminLogin,
+  validateSearch: (s: Record<string, unknown>) => ({
+    mode: s.mode === "signup" ? ("signup" as const) : undefined,
+  }),
   head: () => ({ meta: [{ title: "Вход в админку" }] }),
 });
 
 function AdminLogin() {
   const nav = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const { mode: initialMode } = Route.useSearch();
+  const [mode, setMode] = useState<"signin" | "signup">(initialMode === "signup" ? "signup" : "signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
