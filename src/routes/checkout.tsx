@@ -27,7 +27,13 @@ const schema = z.object({
     .min(10, "Введите номер телефона")
     .max(20)
     .regex(/^[+\d\s()-]+$/, "Только цифры и +-()"),
-  email: z.string().trim().email("Неверный email").max(120),
+  email: z
+    .string()
+    .trim()
+    .max(120)
+    .email("Неверный email")
+    .optional()
+    .or(z.literal("")),
   city: z.string().trim().min(2, "Укажите город").max(60),
   delivery: z.enum(["yandex", "cdek", "post"]),
   address: z.string().trim().min(3, "Адрес или пункт выдачи").max(200),
@@ -36,6 +42,12 @@ const schema = z.object({
 });
 
 type FormValues = z.infer<typeof schema>;
+
+const deliveryOptions = [
+  { v: "yandex" as const, label: "Яндекс Доставка", hint: "по тарифу" },
+  { v: "cdek" as const, label: "СДЭК", hint: "по тарифу" },
+  { v: "post" as const, label: "Почта России", hint: "350 ₽" },
+];
 
 function CheckoutPage() {
   const items = useCart((s) => s.items);
@@ -85,125 +97,135 @@ function CheckoutPage() {
   }
 
   return (
-    <Container className="py-10 sm:py-14">
-      <h1 className="font-display text-3xl sm:text-4xl">Оформление заказа</h1>
+    <>
+      <Container className="py-10 pb-28 sm:py-14 lg:pb-14">
+        <h1 className="font-display text-3xl sm:text-4xl">Оформление заказа</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Менеджер свяжется по телефону для уточнения деталей.
+        </p>
 
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]"
-        noValidate
-      >
-        <div className="space-y-6">
-          <Section title="Контактные данные">
-            <Field label="Имя" error={errors.name?.message}>
-              <input type="text" autoComplete="name" {...register("name")} className={inputCls} />
-            </Field>
-            <Field label="Телефон" error={errors.phone?.message}>
-              <input type="tel" autoComplete="tel" placeholder="+7 ___ ___ __ __" {...register("phone")} className={inputCls} />
-            </Field>
-            <Field label="Email" error={errors.email?.message}>
-              <input type="email" autoComplete="email" {...register("email")} className={inputCls} />
-            </Field>
-          </Section>
+        <form
+          id="checkout-form"
+          onSubmit={handleSubmit(onSubmit)}
+          className="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]"
+          noValidate
+        >
+          <div className="space-y-6">
+            <section className="rounded-2xl border border-border/60 bg-card p-5">
+              <h2 className="mb-4 font-display text-lg">Контакты и доставка</h2>
+              <div className="grid gap-4">
+                <Field label="Имя" error={errors.name?.message}>
+                  <input type="text" autoComplete="name" {...register("name")} className={inputCls} />
+                </Field>
+                <Field label="Телефон" error={errors.phone?.message}>
+                  <input type="tel" autoComplete="tel" placeholder="+7 ___ ___ __ __" {...register("phone")} className={inputCls} />
+                </Field>
+                <Field label="Email (необязательно)" error={errors.email?.message}>
+                  <input type="email" autoComplete="email" {...register("email")} className={inputCls} />
+                </Field>
+                <Field label="Город" error={errors.city?.message}>
+                  <input type="text" autoComplete="address-level2" {...register("city")} className={inputCls} />
+                </Field>
 
-          <Section title="Доставка">
-            <Field label="Город" error={errors.city?.message}>
-              <input type="text" autoComplete="address-level2" {...register("city")} className={inputCls} />
-            </Field>
-            <fieldset>
-              <legend className="mb-2 text-sm text-muted-foreground">Способ доставки</legend>
-              <div className="grid gap-2 sm:grid-cols-3">
-                {[
-                  { v: "yandex", label: "Яндекс Доставка" },
-                  { v: "cdek", label: "СДЭК" },
-                  { v: "post", label: "Почта России" },
-                ].map((opt) => (
-                  <label
-                    key={opt.v}
-                    className="flex cursor-pointer items-center gap-2 rounded-xl border border-border bg-background px-4 py-3 text-sm has-[:checked]:border-foreground has-[:checked]:bg-foreground has-[:checked]:text-background"
-                  >
-                    <input
-                      type="radio"
-                      value={opt.v}
-                      {...register("delivery")}
-                      className="sr-only"
-                    />
-                    {opt.label}
-                  </label>
-                ))}
+                <fieldset>
+                  <legend className="mb-2 text-sm text-muted-foreground">Способ доставки</legend>
+                  <div className="grid gap-2 sm:grid-cols-3">
+                    {deliveryOptions.map((opt) => (
+                      <label
+                        key={opt.v}
+                        className="flex cursor-pointer flex-col gap-0.5 rounded-xl border border-border bg-background px-4 py-3 text-sm has-[:checked]:border-foreground has-[:checked]:bg-foreground has-[:checked]:text-background"
+                      >
+                        <input
+                          type="radio"
+                          value={opt.v}
+                          {...register("delivery")}
+                          className="sr-only"
+                        />
+                        <span>{opt.label}</span>
+                        <span className="text-xs opacity-70">{opt.hint}</span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+
+                <Field label="Адрес или пункт выдачи" error={errors.address?.message}>
+                  <input type="text" {...register("address")} className={inputCls} />
+                </Field>
+                <Field label="Комментарий (необязательно)" error={errors.comment?.message}>
+                  <textarea rows={3} {...register("comment")} className={`${inputCls} resize-none`} />
+                </Field>
               </div>
-            </fieldset>
-            <Field label="Адрес или пункт выдачи" error={errors.address?.message}>
-              <input type="text" {...register("address")} className={inputCls} />
-            </Field>
-            <Field label="Комментарий (необязательно)" error={errors.comment?.message}>
-              <textarea rows={3} {...register("comment")} className={`${inputCls} resize-none`} />
-            </Field>
-          </Section>
+            </section>
 
-          <label className="flex items-start gap-3 text-sm text-muted-foreground">
-            <input type="checkbox" {...register("agree")} className="mt-1 h-4 w-4 accent-primary" />
-            <span>
-              Согласен с обработкой персональных данных и условиями заказа.
-              {errors.agree && (
-                <span className="ml-2 text-destructive">{errors.agree.message}</span>
-              )}
-            </span>
-          </label>
-        </div>
-
-        <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
-          <div className="rounded-2xl border border-border/60 bg-card p-5">
-            <h2 className="font-display text-lg">Ваш заказ</h2>
-            <ul className="mt-3 space-y-2 text-sm">
-              {items.map((i) => (
-                <li key={i.productId} className="flex justify-between gap-3">
-                  <span className="text-muted-foreground">
-                    {i.name} <span className="text-foreground">× {i.qty}</span>
-                  </span>
-                  <Price value={i.price * i.qty} />
-                </li>
-              ))}
-            </ul>
-            <div className="my-4 h-px bg-border" />
-            <div className="flex items-center justify-between">
-              <span className="font-display text-lg">Итого</span>
-              <Price value={subtotal} className="text-xl font-medium" />
-            </div>
-            <button
-              type="submit"
-              disabled={submitting}
-              className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition-colors hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {submitting ? "Отправляем…" : "Подтвердить заказ"}
-            </button>
-            <p className="mt-3 text-xs text-muted-foreground">
-              Менеджер свяжется с вами для уточнения деталей. Оплата производится после подтверждения.
-            </p>
+            <label className="flex items-start gap-3 text-sm text-muted-foreground">
+              <input type="checkbox" {...register("agree")} className="mt-1 h-4 w-4 accent-primary" />
+              <span>
+                Согласен с обработкой персональных данных.
+                {errors.agree && (
+                  <span className="ml-2 text-destructive">{errors.agree.message}</span>
+                )}
+              </span>
+            </label>
           </div>
-        </aside>
-      </form>
-    </Container>
+
+          <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
+            <div className="rounded-2xl border border-border/60 bg-card p-5">
+              <h2 className="font-display text-lg">Ваш заказ</h2>
+              <ul className="mt-3 space-y-2 text-sm">
+                {items.map((i) => (
+                  <li key={i.productId} className="flex justify-between gap-3">
+                    <span className="text-muted-foreground">
+                      {i.name} <span className="text-foreground">× {i.qty}</span>
+                    </span>
+                    <Price value={i.price * i.qty} />
+                  </li>
+                ))}
+              </ul>
+              <div className="my-4 h-px bg-border" />
+              <div className="flex items-center justify-between">
+                <span className="font-display text-lg">Итого</span>
+                <Price value={subtotal} className="text-xl font-medium" />
+              </div>
+              <button
+                type="submit"
+                disabled={submitting}
+                className="mt-5 hidden w-full items-center justify-center rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition-colors hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-60 lg:inline-flex"
+              >
+                {submitting ? "Отправляем…" : "Оформить заказ"}
+              </button>
+              <p className="mt-3 text-xs text-muted-foreground">
+                Оплата — после подтверждения менеджером.
+              </p>
+            </div>
+          </aside>
+        </form>
+      </Container>
+
+      {/* Sticky mobile submit */}
+      <div className="safe-bottom fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 px-4 py-2.5 backdrop-blur shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.08)] lg:hidden">
+        <div className="flex items-center gap-3">
+          <div className="flex-1">
+            <div className="text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground">
+              Итого
+            </div>
+            <Price value={subtotal} className="text-base font-semibold" />
+          </div>
+          <button
+            type="submit"
+            form="checkout-form"
+            disabled={submitting}
+            className="inline-flex flex-1 items-center justify-center rounded-full bg-foreground px-4 py-3 text-sm font-medium text-background disabled:opacity-60"
+          >
+            {submitting ? "Отправляем…" : "Оформить заказ"}
+          </button>
+        </div>
+      </div>
+    </>
   );
 }
 
 const inputCls =
   "w-full rounded-xl border border-border bg-background px-4 py-3 text-sm transition-colors focus:border-foreground focus:outline-none";
-
-function Section({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="rounded-2xl border border-border/60 bg-card p-5">
-      <h2 className="mb-4 font-display text-lg">{title}</h2>
-      <div className="grid gap-4">{children}</div>
-    </section>
-  );
-}
 
 function Field({
   label,
