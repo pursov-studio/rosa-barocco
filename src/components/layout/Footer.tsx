@@ -4,7 +4,7 @@ import { BRAND } from "@/lib/brand";
 
 export function Footer() {
   return (
-    <footer className="mt-20 border-t border-border/60 bg-muted/40">
+    <footer className="border-t border-border/60 bg-muted/40">
       <Container className="grid gap-10 py-12 sm:grid-cols-3">
         <div>
           <div className="font-display text-xl">
@@ -24,6 +24,7 @@ export function Footer() {
           </h3>
           <ul className="mt-3 space-y-2 text-sm">
             <li><Link to="/catalog" className="text-muted-foreground hover:text-foreground">Каталог</Link></li>
+            <li><Link to="/cart" className="text-muted-foreground hover:text-foreground">Корзина</Link></li>
             <li><Link to="/delivery" className="text-muted-foreground hover:text-foreground">Доставка и оплата</Link></li>
             <li><Link to="/cooperation" className="text-muted-foreground hover:text-foreground">Сотрудничество</Link></li>
             <li><Link to="/contacts" className="text-muted-foreground hover:text-foreground">Контакты</Link></li>
