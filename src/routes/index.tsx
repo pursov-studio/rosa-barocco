@@ -42,7 +42,8 @@ function HomePage() {
               Cosmetic Lab
             </div>
             <h1 className="font-display text-4xl leading-[1.05] text-foreground sm:text-5xl md:text-6xl">
-              Натуральные коллоидные растворы серебра, золота и&nbsp;платины
+              <span className="md:hidden">Коллоидное серебро, золото и&nbsp;платина</span>
+              <span className="hidden md:inline">Натуральные коллоидные растворы серебра, золота и&nbsp;платины</span>
             </h1>
             <p className="mt-5 max-w-md text-base text-muted-foreground">
               Деликатный спрей-мист для лица, тела и&nbsp;кожи рук.
