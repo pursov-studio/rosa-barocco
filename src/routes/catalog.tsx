@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Container } from "@/components/common/Container";
 import { ProductCard } from "@/components/catalog/ProductCard";
-import { categories, products } from "@/lib/catalog/seed";
+import { categories, getCategoryBySlug, products } from "@/lib/catalog/seed";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/catalog")({
