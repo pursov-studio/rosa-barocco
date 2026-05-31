@@ -69,7 +69,7 @@ function ProductsPage() {
       <div className="rounded-2xl border bg-card overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-muted/40 text-left text-xs uppercase text-muted-foreground">
-            <tr><th className="px-3 py-2">Фото</th><th className="px-3 py-2">Название</th><th className="px-3 py-2">Slug</th><th className="px-3 py-2">Категория</th><th className="px-3 py-2">Цена</th><th className="px-3 py-2">В наличии</th><th className="px-3 py-2"></th></tr>
+            <tr><th className="px-3 py-2">Фото</th><th className="px-3 py-2">Название</th><th className="px-3 py-2">Адрес</th><th className="px-3 py-2">Категория</th><th className="px-3 py-2">Цена</th><th className="px-3 py-2">В наличии</th><th className="px-3 py-2"></th></tr>
           </thead>
           <tbody>
             {list.data?.map((p) => (
