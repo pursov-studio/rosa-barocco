@@ -25,6 +25,7 @@ type DBProduct = {
   skin_type: string[] | null;
   target: string | null;
   image_url: string | null;
+  images?: string[] | null;
   in_stock: boolean;
   is_set: boolean;
   bundle_items: string[] | null;
