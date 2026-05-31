@@ -75,7 +75,7 @@ export const products: Product[] = [
     skinType: ["все типы кожи", "зрелая", "нормальная"],
     usage:
       "Встряхните флакон. Распылите на очищенную кожу утром и вечером. Можно добавлять в косметические средства.",
-    images: [platinumLux110],
+    images: [],
     inStock: true,
   },
   {
@@ -94,7 +94,7 @@ export const products: Product[] = [
     skinType: ["все типы кожи", "зрелая", "комбинированная"],
     usage:
       "Встряхните флакон. Равномерно распылите на очищенную кожу. Можно использовать для обогащения косметических средств.",
-    images: [goldChic110],
+    images: [],
     inStock: true,
   },
   {
@@ -113,7 +113,7 @@ export const products: Product[] = [
     skinType: ["все типы кожи", "зрелая", "комбинированная"],
     usage:
       "Распылите на очищенную кожу лица, декольте, рук и тела утром, вечером или в течение дня.",
-    images: [goldChic100],
+    images: [],
     inStock: true,
   },
   {
@@ -130,7 +130,7 @@ export const products: Product[] = [
     areas: ["лицо", "зона декольте", "область вокруг глаз", "руки"],
     usage:
       "Распыляйте на очищенную кожу утром, вечером и в течение дня перед нанесением крема, сыворотки, маски или патчей.",
-    images: [platinum100],
+    images: [],
     inStock: true,
   },
   {
@@ -149,7 +149,7 @@ export const products: Product[] = [
     skinType: ["все типы кожи", "зрелая", "комбинированная"],
     usage:
       "Встряхните флакон. Распылите на очищенную кожу утром, вечером или в течение дня.",
-    images: [gold100],
+    images: [],
     inStock: true,
   },
   {
@@ -167,7 +167,7 @@ export const products: Product[] = [
     shortDescription: "Универсальный спрей-тонер для ежедневного ухода.",
     areas: ["лицо", "тело"],
     usage: "Распыляйте на нужную область кожи.",
-    images: [silverUniversal],
+    images: [],
     inStock: true,
   },
   {
@@ -184,7 +184,7 @@ export const products: Product[] = [
     shortDescription: "Спрей для проблемной кожи, склонной к высыпаниям.",
     target: "проблемная кожа",
     usage: "Используйте как спрей для ухода за кожей.",
-    images: [silverAntiAcne],
+    images: [],
     inStock: true,
   },
   {
@@ -197,7 +197,7 @@ export const products: Product[] = [
     currency: "RUB",
     shortDescription:
       "Набор из коллоидной платины и золота, по 110 мл, 2 флакона.",
-    images: [setDiamantLux],
+    images: [],
     inStock: true,
     isSet: true,
     bundleItems: ["platinum-lux-110", "gold-chic-110"],
@@ -212,7 +212,7 @@ export const products: Product[] = [
     currency: "RUB",
     shortDescription:
       "Набор из коллоидной платины, золота и серебра, по 100 мл, 3 флакона.",
-    images: [setDiamantCollection],
+    images: [],
     inStock: true,
     isSet: true,
     bundleItems: ["platinum-100", "gold-100", "silver-universal"],
