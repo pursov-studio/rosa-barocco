@@ -8,10 +8,21 @@ import { reviews } from "@/lib/catalog/seed";
 import {
   listCategoriesPublic,
   listProductsPublic,
+  getSiteContent,
 } from "@/lib/catalog/catalog.functions";
 import type { Category } from "@/lib/catalog/types";
-import heroImage from "@/assets/hero.jpg";
+import heroImage from "@/assets/hero-main.png";
+import catSilver from "@/assets/category-silver.jpg";
+import catGold from "@/assets/category-gold.jpg";
+import catPlatinum from "@/assets/category-platinum.jpg";
 import { ArrowRight, Leaf, Sparkles, Truck } from "lucide-react";
+
+const metalFallback: Record<Category["metal"], string> = {
+  platinum: catPlatinum,
+  gold: catGold,
+  silver: catSilver,
+  mix: catPlatinum,
+};
 
 const categoriesQuery = queryOptions({
   queryKey: ["categories"],
