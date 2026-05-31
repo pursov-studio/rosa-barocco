@@ -45,7 +45,7 @@ export interface Product {
   inStock: boolean;
   isSet?: boolean;
   bundleItems?: string[];
-  variants: ProductVariant[];
+  variants?: ProductVariant[];
 }
 
 export interface Review {
