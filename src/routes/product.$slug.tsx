@@ -10,6 +10,7 @@ import { StickyBar } from "@/components/common/StickyBar";
 import { getCategoryBySlug } from "@/lib/catalog/seed";
 import { getProductBySlugPublic, listProductsPublic } from "@/lib/catalog/catalog.functions";
 import { useCart } from "@/lib/cart/store";
+import { ImageLightbox } from "@/components/common/ImageLightbox";
 
 const productQuery = (slug: string) =>
   queryOptions({
