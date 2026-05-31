@@ -68,6 +68,8 @@ function ProductPage() {
   );
   const [qty, setQty] = useState(1);
   const [tab, setTab] = useState<"composition" | "usage" | "areas">("composition");
+  const [activeImg, setActiveImg] = useState(0);
+  const [lightbox, setLightbox] = useState(false);
   const add = useCart((s) => s.add);
 
   if (!product) return null;
