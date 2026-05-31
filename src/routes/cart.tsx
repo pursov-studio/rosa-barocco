@@ -64,7 +64,7 @@ function CartPage() {
         <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">
           <div className="rounded-2xl border border-border/60 bg-card px-5">
             {items.map((item) => (
-              <CartItemRow key={item.productId} item={item} />
+              <CartItemRow key={item.variantId} item={item} />
             ))}
           </div>
 
