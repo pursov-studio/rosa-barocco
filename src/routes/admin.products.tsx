@@ -114,17 +114,45 @@ function ProductsPage() {
               <Field label="Зоны (через запятую)"><Input value={edit.areas.join(", ")} onChange={(e) => setEdit({ ...edit, areas: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} /></Field>
               <Field label="Тип кожи (через запятую)"><Input value={edit.skin_type.join(", ")} onChange={(e) => setEdit({ ...edit, skin_type: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} /></Field>
               <Field label="Sort"><Input type="number" value={edit.sort} onChange={(e) => setEdit({ ...edit, sort: Number(e.target.value) })} /></Field>
-              <Field label="Фото" full>
-                {edit.image_url && <img src={edit.image_url} alt="" className="mb-2 h-24 w-24 rounded object-cover" />}
+              <Field label="Фото (можно несколько)" full>
+                {edit.images.length > 0 && (
+                  <div className="mb-2 flex flex-wrap gap-2">
+                    {edit.images.map((src, i) => (
+                      <div key={i} className="group relative h-24 w-24 overflow-hidden rounded border bg-secondary/40">
+                        <img src={src} alt="" className="h-full w-full object-contain p-1" />
+                        <button
+                          type="button"
+                          onClick={() => setEdit({ ...edit, images: edit.images.filter((_, j) => j !== i), image_url: i === 0 ? (edit.images[1] ?? null) : edit.image_url })}
+                          className="absolute right-0 top-0 rounded-bl bg-black/60 px-1.5 text-xs text-white opacity-0 group-hover:opacity-100"
+                          aria-label="Удалить"
+                        >×</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 <input
-                  type="file" accept="image/*"
+                  type="file" accept="image/*" multiple
                   onChange={async (e) => {
-                    const f = e.target.files?.[0]; if (!f) return;
-                    try { const url = await onUpload(f); setEdit({ ...edit, image_url: url }); toast.success("Загружено"); }
-                    catch (err: any) { toast.error(err.message); }
+                    const files = Array.from(e.target.files ?? []); if (!files.length) return;
+                    try {
+                      const urls = await Promise.all(files.map(onUpload));
+                      const next = [...edit.images, ...urls];
+                      setEdit({ ...edit, images: next, image_url: edit.image_url ?? next[0] ?? null });
+                      toast.success(`Загружено: ${urls.length}`);
+                    } catch (err: any) { toast.error(err.message); }
+                    e.target.value = "";
                   }}
                 />
-                <Input className="mt-2" placeholder="или вставьте URL" value={edit.image_url ?? ""} onChange={(e) => setEdit({ ...edit, image_url: e.target.value })} />
+                <Input className="mt-2" placeholder="или вставьте URL и нажмите Enter" onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    const url = (e.target as HTMLInputElement).value.trim();
+                    if (!url) return;
+                    const next = [...edit.images, url];
+                    setEdit({ ...edit, images: next, image_url: edit.image_url ?? next[0] });
+                    (e.target as HTMLInputElement).value = "";
+                  }
+                }} />
               </Field>
               <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={edit.in_stock} onChange={(e) => setEdit({ ...edit, in_stock: e.target.checked })} /> В наличии</label>
               <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={edit.is_set} onChange={(e) => setEdit({ ...edit, is_set: e.target.checked })} /> Набор</label>
