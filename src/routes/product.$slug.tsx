@@ -104,7 +104,7 @@ function ProductPage() {
             <button
               type="button"
               onClick={() => setLightbox(true)}
-              className="block w-full overflow-hidden rounded-3xl bg-secondary/40"
+              className="block w-full overflow-hidden rounded-[2.5rem] bg-secondary/40"
               aria-label="Открыть фото"
             >
               <img
