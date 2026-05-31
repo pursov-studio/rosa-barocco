@@ -18,13 +18,13 @@ type ProductRow = {
   id?: string; slug: string; sku?: string | null; name: string; category_slug: string;
   price: number; short_description: string; composition?: string | null; usage?: string | null;
   volume_ml?: number | null; weight_g?: number | null; areas: string[]; skin_type: string[];
-  target?: string | null; image_url?: string | null; in_stock: boolean; is_set: boolean;
+  target?: string | null; image_url?: string | null; images: string[]; in_stock: boolean; is_set: boolean;
   bundle_items: string[]; sort: number;
 };
 
 const empty = (): ProductRow => ({
   slug: "", name: "", category_slug: "", price: 0, short_description: "",
-  areas: [], skin_type: [], bundle_items: [], in_stock: true, is_set: false, sort: 0,
+  areas: [], skin_type: [], bundle_items: [], images: [], in_stock: true, is_set: false, sort: 0,
 });
 
 function ProductsPage() {
