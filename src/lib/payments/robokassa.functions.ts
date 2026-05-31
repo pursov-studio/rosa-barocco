@@ -19,6 +19,7 @@ async function loadConfig() {
 }
 
 export const buildRobokassaUrl = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ orderId: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     const cfg = await loadConfig();
