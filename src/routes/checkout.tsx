@@ -174,9 +174,11 @@ function CheckoutPage() {
               <h2 className="font-display text-lg">Ваш заказ</h2>
               <ul className="mt-3 space-y-2 text-sm">
                 {items.map((i) => (
-                  <li key={i.productId} className="flex justify-between gap-3">
+                  <li key={i.variantId} className="flex justify-between gap-3">
                     <span className="text-muted-foreground">
-                      {i.name} <span className="text-foreground">× {i.qty}</span>
+                      {i.name}
+                      {i.volumeMl ? `, ${i.volumeMl} мл` : ""}{" "}
+                      <span className="text-foreground">× {i.qty}</span>
                     </span>
                     <Price value={i.price * i.qty} />
                   </li>
