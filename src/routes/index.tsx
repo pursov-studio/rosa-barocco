@@ -146,13 +146,13 @@ function HomePage() {
             </ul>
           </div>
           <div className="order-1 md:order-2">
-            <div className="relative aspect-[5/4] overflow-hidden rounded-3xl md:aspect-[4/5]">
+            <div className="relative aspect-[3/2] overflow-hidden rounded-3xl bg-secondary/40">
               <img
                 src={heroSrc}
                 alt="ROSA&BAROCCO — флакон-мист"
-                width={1600}
-                height={1200}
-                className="h-full w-full object-cover"
+                width={1536}
+                height={1024}
+                className="h-full w-full object-contain"
               />
             </div>
           </div>
