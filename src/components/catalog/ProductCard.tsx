@@ -30,7 +30,7 @@ export function ProductCard({ product }: { product: Product }) {
       className="group relative flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card transition-all hover:border-primary/40 hover:shadow-[var(--shadow-card)]"
     >
       <div className="p-3">
-        <div className="aspect-square w-full overflow-hidden rounded-2xl bg-secondary/40">
+        <div className="aspect-[1086/1448] w-full overflow-hidden rounded-2xl bg-secondary/40">
           <img
             src={product.images[0]}
             alt={product.name}

@@ -110,9 +110,9 @@ function ProductPage() {
               <img
                 src={product.images[activeImg] ?? product.images[0]}
                 alt={product.name}
-                width={1200}
-                height={1200}
-                className="aspect-square w-full cursor-zoom-in object-contain p-4"
+                width={1086}
+                height={1448}
+                className="aspect-[1086/1448] w-full cursor-zoom-in object-contain p-4"
               />
             </button>
             {product.images.length > 1 && (
