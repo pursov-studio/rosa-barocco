@@ -21,10 +21,10 @@ function SuccessPage() {
       <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground">
         <Check className="h-7 w-7" />
       </div>
-      <h1 className="mt-6 font-display text-4xl">Спасибо за заказ</h1>
+      <h1 className="mt-6 font-display text-4xl">Заявка принята</h1>
       {id && (
         <p className="mt-3 text-sm text-muted-foreground">
-          Номер вашего заказа: <span className="font-mono text-foreground">{id}</span>
+          Номер заявки: <span className="font-mono text-foreground">{id}</span>
         </p>
       )}
       <p className="mx-auto mt-4 max-w-md text-muted-foreground">

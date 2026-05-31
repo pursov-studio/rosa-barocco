@@ -100,10 +100,13 @@ function CheckoutPage() {
   return (
     <>
       <Container className="py-10 pb-28 sm:py-14 lg:pb-14">
-        <h1 className="font-display text-3xl sm:text-4xl">Оформление заказа</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Менеджер свяжется по телефону для уточнения деталей.
-        </p>
+        <h1 className="font-display text-3xl sm:text-4xl">Оформление заявки</h1>
+        <div className="mt-4 rounded-2xl border border-foreground/15 bg-secondary/60 p-5">
+          <p className="font-medium">Оплата будет добавлена в будущих обновлениях.</p>
+          <p className="mt-1.5 text-sm text-muted-foreground">
+            Сейчас вы можете оставить заявку на покупку — мы свяжемся с вами для подтверждения и согласования оплаты.
+          </p>
+        </div>
 
         <form
           id="checkout-form"
@@ -171,7 +174,7 @@ function CheckoutPage() {
 
           <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
             <div className="rounded-2xl border border-border/60 bg-card p-5">
-              <h2 className="font-display text-lg">Ваш заказ</h2>
+            <h2 className="font-display text-lg">Ваша заявка</h2>
               <ul className="mt-3 space-y-2 text-sm">
                 {items.map((i) => (
                   <li key={i.variantId} className="flex justify-between gap-3">
@@ -194,10 +197,10 @@ function CheckoutPage() {
                 disabled={submitting}
                 className="mt-5 hidden w-full items-center justify-center rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition-colors hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-60 lg:inline-flex"
               >
-                {submitting ? "Отправляем…" : "Оформить заказ"}
+                {submitting ? "Отправляем…" : "Оставить заявку"}
               </button>
               <p className="mt-3 text-xs text-muted-foreground">
-                Оплата — после подтверждения менеджером.
+                Оплата пока недоступна — после получения заявки мы свяжемся с вами для согласования.
               </p>
             </div>
           </aside>
@@ -219,7 +222,7 @@ function CheckoutPage() {
             disabled={submitting}
             className="inline-flex flex-1 items-center justify-center rounded-full bg-foreground px-4 py-3 text-sm font-medium text-background disabled:opacity-60"
           >
-            {submitting ? "Отправляем…" : "Оформить заказ"}
+            {submitting ? "Отправляем…" : "Оставить заявку"}
           </button>
         </div>
       </StickyBar>
