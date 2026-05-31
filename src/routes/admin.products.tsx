@@ -69,7 +69,7 @@ function ProductsPage() {
       <div className="rounded-2xl border bg-card overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-muted/40 text-left text-xs uppercase text-muted-foreground">
-            <tr><th className="px-3 py-2">Фото</th><th className="px-3 py-2">Название</th><th className="px-3 py-2">Slug</th><th className="px-3 py-2">Категория</th><th className="px-3 py-2">Цена</th><th className="px-3 py-2">В наличии</th><th className="px-3 py-2"></th></tr>
+            <tr><th className="px-3 py-2">Фото</th><th className="px-3 py-2">Название</th><th className="px-3 py-2">Адрес</th><th className="px-3 py-2">Категория</th><th className="px-3 py-2">Цена</th><th className="px-3 py-2">В наличии</th><th className="px-3 py-2"></th></tr>
           </thead>
           <tbody>
             {list.data?.map((p) => (
@@ -95,8 +95,8 @@ function ProductsPage() {
           <div className="max-h-[90vh] w-full max-w-2xl overflow-auto rounded-2xl bg-background p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <h2 className="font-display text-xl mb-4">{edit.id ? "Изменить товар" : "Новый товар"}</h2>
             <form className="grid gap-3 sm:grid-cols-2" onSubmit={(e) => { e.preventDefault(); save.mutate(edit); }}>
-              <Field label="Slug"><Input required value={edit.slug} onChange={(e) => setEdit({ ...edit, slug: e.target.value })} /></Field>
-              <Field label="SKU"><Input value={edit.sku ?? ""} onChange={(e) => setEdit({ ...edit, sku: e.target.value })} /></Field>
+              <Field label="Адрес в URL (латиницей)"><Input required value={edit.slug} onChange={(e) => setEdit({ ...edit, slug: e.target.value })} /></Field>
+              <Field label="Артикул"><Input value={edit.sku ?? ""} onChange={(e) => setEdit({ ...edit, sku: e.target.value })} /></Field>
               <Field label="Название" full><Input required value={edit.name} onChange={(e) => setEdit({ ...edit, name: e.target.value })} /></Field>
               <Field label="Категория">
                 <select required value={edit.category_slug} onChange={(e) => setEdit({ ...edit, category_slug: e.target.value })} className="h-10 w-full rounded-md border bg-background px-3 text-sm">
@@ -113,7 +113,7 @@ function ProductsPage() {
               <Field label="Назначение"><Input value={edit.target ?? ""} onChange={(e) => setEdit({ ...edit, target: e.target.value })} /></Field>
               <Field label="Зоны (через запятую)"><Input value={edit.areas.join(", ")} onChange={(e) => setEdit({ ...edit, areas: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} /></Field>
               <Field label="Тип кожи (через запятую)"><Input value={edit.skin_type.join(", ")} onChange={(e) => setEdit({ ...edit, skin_type: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} /></Field>
-              <Field label="Sort"><Input type="number" value={edit.sort} onChange={(e) => setEdit({ ...edit, sort: Number(e.target.value) })} /></Field>
+              <Field label="Порядок сортировки"><Input type="number" value={edit.sort} onChange={(e) => setEdit({ ...edit, sort: Number(e.target.value) })} /></Field>
               <Field label="Фото (можно несколько)" full>
                 {edit.images.length > 0 && (
                   <div className="mb-2 flex flex-wrap gap-2">
@@ -130,19 +130,23 @@ function ProductsPage() {
                     ))}
                   </div>
                 )}
-                <input
-                  type="file" accept="image/*" multiple
-                  onChange={async (e) => {
-                    const files = Array.from(e.target.files ?? []); if (!files.length) return;
-                    try {
-                      const urls = await Promise.all(files.map(onUpload));
-                      const next = [...edit.images, ...urls];
-                      setEdit({ ...edit, images: next, image_url: edit.image_url ?? next[0] ?? null });
-                      toast.success(`Загружено: ${urls.length}`);
-                    } catch (err: any) { toast.error(err.message); }
-                    e.target.value = "";
-                  }}
-                />
+                <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground">
+                  <span>Выбрать файлы…</span>
+                  <input
+                    type="file" accept="image/*" multiple className="hidden"
+                    onChange={async (e) => {
+                      const files = Array.from(e.target.files ?? []); if (!files.length) return;
+                      try {
+                        const urls = await Promise.all(files.map(onUpload));
+                        const next = [...edit.images, ...urls];
+                        setEdit({ ...edit, images: next, image_url: edit.image_url ?? next[0] ?? null });
+                        toast.success(`Загружено: ${urls.length}`);
+                      } catch (err: any) { toast.error(err.message); }
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+                <p className="mt-1 text-xs text-muted-foreground">Можно выбрать несколько файлов. Рекомендуемый размер 1086×1448.</p>
                 <Input className="mt-2" placeholder="или вставьте URL и нажмите Enter" onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
