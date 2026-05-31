@@ -74,13 +74,16 @@ function normalizeCategory(row: any): Category {
     shortName: row.short_name ?? row.shortName ?? row.name,
     metal: row.metal,
     description: row.description ?? undefined,
-    image: row.image_url ?? undefined,
+    image: row.image_url ?? metalFallback[row.metal as Category["metal"]],
   };
 }
 
 function HomePage() {
   const { data: rawCategories } = useSuspenseQuery(categoriesQuery);
   const { data: products } = useSuspenseQuery(productsQuery);
+  const { data: home } = useSuspenseQuery(homeContentQuery);
+
+  const heroSrc = (home as any)?.heroImage || heroImage;
 
   const categories = (rawCategories ?? []).map(normalizeCategory);
 
