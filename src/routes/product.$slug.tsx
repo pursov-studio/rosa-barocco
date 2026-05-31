@@ -22,7 +22,7 @@ const allProductsQuery = queryOptions({
 });
 
 export const Route = createFileRoute("/product/$slug")({
-  head: ({ loaderData }) => {
+  head: ({ loaderData }: { loaderData?: { product?: any } }) => {
     const p = loaderData?.product;
     if (!p) return { meta: [{ title: "Товар — ROSA&BAROCCO" }] };
     const title = `${p.name} — ROSA&BAROCCO`;
