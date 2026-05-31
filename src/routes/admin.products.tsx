@@ -82,6 +82,16 @@ function ProductsPage() {
                 <td className="px-3 py-2">{p.in_stock ? "✓" : "—"}</td>
                 <td className="px-3 py-2 text-right space-x-1">
                   <Button size="sm" variant="outline" onClick={() => setEdit({ ...(p as any), images: (p as any).images ?? [] })}>Изм.</Button>
+                  <Button size="sm" variant="outline" onClick={() => {
+                    const { id, created_at, updated_at, ...rest } = p as any;
+                    setEdit({
+                      ...rest,
+                      images: (p as any).images ?? [],
+                      slug: `${p.slug}-copy`,
+                      sku: p.sku ? `${p.sku}-COPY` : null,
+                      name: `${p.name} (копия)`,
+                    });
+                  }}>Копир.</Button>
                   <Button size="sm" variant="ghost" onClick={() => { if (confirm("Удалить?")) remove.mutate(p.id); }}>×</Button>
                 </td>
               </tr>
