@@ -4,6 +4,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { createHash } from "crypto";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 async function loadConfig() {
   const { data } = await supabaseAdmin
@@ -18,6 +19,7 @@ async function loadConfig() {
 }
 
 export const buildRobokassaUrl = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ orderId: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     const cfg = await loadConfig();
