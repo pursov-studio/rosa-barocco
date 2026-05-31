@@ -222,7 +222,7 @@ function CheckoutPage() {
             disabled={submitting}
             className="inline-flex flex-1 items-center justify-center rounded-full bg-foreground px-4 py-3 text-sm font-medium text-background disabled:opacity-60"
           >
-            {submitting ? "Отправляем…" : "Оформить заказ"}
+            {submitting ? "Отправляем…" : "Оставить заявку"}
           </button>
         </div>
       </StickyBar>
