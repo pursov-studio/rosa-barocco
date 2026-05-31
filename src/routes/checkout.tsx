@@ -197,10 +197,10 @@ function CheckoutPage() {
                 disabled={submitting}
                 className="mt-5 hidden w-full items-center justify-center rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition-colors hover:bg-foreground/90 disabled:cursor-not-allowed disabled:opacity-60 lg:inline-flex"
               >
-                {submitting ? "Отправляем…" : "Оформить заказ"}
+                {submitting ? "Отправляем…" : "Оставить заявку"}
               </button>
               <p className="mt-3 text-xs text-muted-foreground">
-                Оплата — после подтверждения менеджером.
+                Оплата пока недоступна — после получения заявки мы свяжемся с вами для согласования.
               </p>
             </div>
           </aside>
