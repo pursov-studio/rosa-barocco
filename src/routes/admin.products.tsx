@@ -18,13 +18,13 @@ type ProductRow = {
   id?: string; slug: string; sku?: string | null; name: string; category_slug: string;
   price: number; short_description: string; composition?: string | null; usage?: string | null;
   volume_ml?: number | null; weight_g?: number | null; areas: string[]; skin_type: string[];
-  target?: string | null; image_url?: string | null; in_stock: boolean; is_set: boolean;
+  target?: string | null; image_url?: string | null; images: string[]; in_stock: boolean; is_set: boolean;
   bundle_items: string[]; sort: number;
 };
 
 const empty = (): ProductRow => ({
   slug: "", name: "", category_slug: "", price: 0, short_description: "",
-  areas: [], skin_type: [], bundle_items: [], in_stock: true, is_set: false, sort: 0,
+  areas: [], skin_type: [], bundle_items: [], images: [], in_stock: true, is_set: false, sort: 0,
 });
 
 function ProductsPage() {
@@ -74,14 +74,14 @@ function ProductsPage() {
           <tbody>
             {list.data?.map((p) => (
               <tr key={p.id} className="border-t">
-                <td className="px-3 py-2">{p.image_url ? <img src={p.image_url} alt="" className="h-12 w-12 rounded object-cover" /> : <div className="h-12 w-12 rounded bg-muted" />}</td>
+                <td className="px-3 py-2">{(p.images?.[0] || p.image_url) ? <img src={(p.images?.[0] || p.image_url) as string} alt="" className="h-12 w-12 rounded bg-secondary/40 object-contain" /> : <div className="h-12 w-12 rounded bg-muted" />}</td>
                 <td className="px-3 py-2">{p.name}</td>
                 <td className="px-3 py-2 font-mono text-xs">{p.slug}</td>
                 <td className="px-3 py-2 text-xs">{p.category_slug}</td>
                 <td className="px-3 py-2">{p.price} ₽</td>
                 <td className="px-3 py-2">{p.in_stock ? "✓" : "—"}</td>
                 <td className="px-3 py-2 text-right space-x-1">
-                  <Button size="sm" variant="outline" onClick={() => setEdit(p as any)}>Изм.</Button>
+                  <Button size="sm" variant="outline" onClick={() => setEdit({ ...(p as any), images: (p as any).images ?? [] })}>Изм.</Button>
                   <Button size="sm" variant="ghost" onClick={() => { if (confirm("Удалить?")) remove.mutate(p.id); }}>×</Button>
                 </td>
               </tr>
@@ -114,17 +114,45 @@ function ProductsPage() {
               <Field label="Зоны (через запятую)"><Input value={edit.areas.join(", ")} onChange={(e) => setEdit({ ...edit, areas: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} /></Field>
               <Field label="Тип кожи (через запятую)"><Input value={edit.skin_type.join(", ")} onChange={(e) => setEdit({ ...edit, skin_type: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} /></Field>
               <Field label="Sort"><Input type="number" value={edit.sort} onChange={(e) => setEdit({ ...edit, sort: Number(e.target.value) })} /></Field>
-              <Field label="Фото" full>
-                {edit.image_url && <img src={edit.image_url} alt="" className="mb-2 h-24 w-24 rounded object-cover" />}
+              <Field label="Фото (можно несколько)" full>
+                {edit.images.length > 0 && (
+                  <div className="mb-2 flex flex-wrap gap-2">
+                    {edit.images.map((src, i) => (
+                      <div key={i} className="group relative h-24 w-24 overflow-hidden rounded border bg-secondary/40">
+                        <img src={src} alt="" className="h-full w-full object-contain p-1" />
+                        <button
+                          type="button"
+                          onClick={() => setEdit({ ...edit, images: edit.images.filter((_, j) => j !== i), image_url: i === 0 ? (edit.images[1] ?? null) : edit.image_url })}
+                          className="absolute right-0 top-0 rounded-bl bg-black/60 px-1.5 text-xs text-white opacity-0 group-hover:opacity-100"
+                          aria-label="Удалить"
+                        >×</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 <input
-                  type="file" accept="image/*"
+                  type="file" accept="image/*" multiple
                   onChange={async (e) => {
-                    const f = e.target.files?.[0]; if (!f) return;
-                    try { const url = await onUpload(f); setEdit({ ...edit, image_url: url }); toast.success("Загружено"); }
-                    catch (err: any) { toast.error(err.message); }
+                    const files = Array.from(e.target.files ?? []); if (!files.length) return;
+                    try {
+                      const urls = await Promise.all(files.map(onUpload));
+                      const next = [...edit.images, ...urls];
+                      setEdit({ ...edit, images: next, image_url: edit.image_url ?? next[0] ?? null });
+                      toast.success(`Загружено: ${urls.length}`);
+                    } catch (err: any) { toast.error(err.message); }
+                    e.target.value = "";
                   }}
                 />
-                <Input className="mt-2" placeholder="или вставьте URL" value={edit.image_url ?? ""} onChange={(e) => setEdit({ ...edit, image_url: e.target.value })} />
+                <Input className="mt-2" placeholder="или вставьте URL и нажмите Enter" onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    const url = (e.target as HTMLInputElement).value.trim();
+                    if (!url) return;
+                    const next = [...edit.images, url];
+                    setEdit({ ...edit, images: next, image_url: edit.image_url ?? next[0] });
+                    (e.target as HTMLInputElement).value = "";
+                  }
+                }} />
               </Field>
               <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={edit.in_stock} onChange={(e) => setEdit({ ...edit, in_stock: e.target.checked })} /> В наличии</label>
               <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={edit.is_set} onChange={(e) => setEdit({ ...edit, is_set: e.target.checked })} /> Набор</label>

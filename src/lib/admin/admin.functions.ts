@@ -21,6 +21,7 @@ const productSchema = z.object({
   skin_type: z.array(z.string()).default([]),
   target: z.string().max(200).nullable().optional(),
   image_url: z.string().url().nullable().optional(),
+  images: z.array(z.string().url()).max(20).default([]),
   in_stock: z.boolean().default(true),
   is_set: z.boolean().default(false),
   bundle_items: z.array(z.string()).default([]),
