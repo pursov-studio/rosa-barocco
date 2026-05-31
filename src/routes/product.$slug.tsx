@@ -1,4 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Minus, Plus, ShoppingBag } from "lucide-react";
@@ -6,12 +7,23 @@ import { Container } from "@/components/common/Container";
 import { Price } from "@/components/common/Price";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { StickyBar } from "@/components/common/StickyBar";
-import { getCategoryBySlug, getProductBySlug, getProductsByCategory } from "@/lib/catalog/seed";
+import { getCategoryBySlug } from "@/lib/catalog/seed";
+import { getProductBySlugPublic, listProductsPublic } from "@/lib/catalog/catalog.functions";
 import { useCart } from "@/lib/cart/store";
 
+const productQuery = (slug: string) =>
+  queryOptions({
+    queryKey: ["product", slug],
+    queryFn: () => getProductBySlugPublic({ data: { slug } }),
+  });
+const allProductsQuery = queryOptions({
+  queryKey: ["products"],
+  queryFn: () => listProductsPublic(),
+});
+
 export const Route = createFileRoute("/product/$slug")({
-  head: ({ params }) => {
-    const p = getProductBySlug(params.slug);
+  head: ({ loaderData }) => {
+    const p = loaderData?.product;
     if (!p) return { meta: [{ title: "Товар — ROSA&BAROCCO" }] };
     const title = `${p.name} — ROSA&BAROCCO`;
     return {
@@ -24,9 +36,10 @@ export const Route = createFileRoute("/product/$slug")({
       ],
     };
   },
-  loader: ({ params }) => {
-    const product = getProductBySlug(params.slug);
+  loader: async ({ params, context }) => {
+    const product = await context.queryClient.ensureQueryData(productQuery(params.slug));
     if (!product) throw notFound();
+    await context.queryClient.ensureQueryData(allProductsQuery);
     return { product };
   },
   notFoundComponent: () => (
@@ -35,22 +48,45 @@ export const Route = createFileRoute("/product/$slug")({
       <Link to="/catalog" className="mt-4 inline-block text-primary">В каталог</Link>
     </Container>
   ),
+  errorComponent: ({ error }) => (
+    <Container className="py-20 text-center">
+      <h1 className="font-display text-2xl">Ошибка загрузки</h1>
+      <p className="mt-2 text-muted-foreground">{error.message}</p>
+    </Container>
+  ),
   component: ProductPage,
 });
 
 function ProductPage() {
-  const { product } = Route.useLoaderData();
+  const { slug } = Route.useParams();
+  const { data: product } = useSuspenseQuery(productQuery(slug));
+  const { data: allProducts } = useSuspenseQuery(allProductsQuery);
+  const variants = product?.variants ?? [];
+  const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(
+    variants[0]?.id,
+  );
   const [qty, setQty] = useState(1);
   const [tab, setTab] = useState<"composition" | "usage" | "areas">("composition");
   const add = useCart((s) => s.add);
+
+  if (!product) return null;
   const category = getCategoryBySlug(product.categorySlug);
-  const related = getProductsByCategory(product.categorySlug).filter(
-    (p) => p.id !== product.id,
-  );
+  const related = allProducts
+    .filter((p) => p.categorySlug === product.categorySlug && p.id !== product.id);
+
+  const selectedVariant =
+    variants.find((v) => v.id === selectedVariantId) ?? variants[0];
+  const currentPrice = selectedVariant?.price ?? product.price;
 
   function handleAdd() {
-    add(product, qty);
-    toast.success("Добавлено в корзину", { description: product.name });
+    if (!selectedVariant) {
+      toast.error("Выберите объём");
+      return;
+    }
+    add(product!, selectedVariant, qty);
+    toast.success("Добавлено в корзину", {
+      description: `${product!.name} · ${selectedVariant.volumeMl} мл`,
+    });
   }
 
   return (
@@ -84,25 +120,59 @@ function ProductPage() {
             <h1 className="mt-2 font-display text-3xl leading-tight sm:text-4xl">
               {product.name}
             </h1>
-            <Price value={product.price} className="mt-4 block text-2xl font-medium" />
+
+            {variants.length > 0 && (
+              <div className="mt-5">
+                <div className="mb-2 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                  Объём
+                </div>
+                <div className="inline-flex rounded-full border border-border p-1">
+                  {variants.map((v) => (
+                    <button
+                      key={v.id}
+                      type="button"
+                      onClick={() => setSelectedVariantId(v.id)}
+                      disabled={!v.inStock}
+                      className={
+                        "rounded-full px-4 py-2 text-sm transition-colors " +
+                        (selectedVariantId === v.id
+                          ? "bg-foreground text-background"
+                          : "text-muted-foreground hover:text-foreground")
+                      }
+                    >
+                      {v.volumeMl} мл
+                      {!v.inStock && <span className="ml-1 text-xs">(нет)</span>}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="mt-4">
+              {currentPrice > 0 ? (
+                <Price value={currentPrice} className="block text-2xl font-medium" />
+              ) : (
+                <span className="block text-base text-muted-foreground">
+                  Цена уточняется
+                </span>
+              )}
+            </div>
 
             <p className="mt-5 text-muted-foreground">{product.shortDescription}</p>
 
             <dl className="mt-6 grid grid-cols-2 gap-y-3 text-sm">
-              {product.volumeMl && (
+              {selectedVariant?.volumeMl && (
                 <>
                   <dt className="text-muted-foreground">Объём</dt>
-                  <dd>{product.volumeMl} мл</dd>
+                  <dd>{selectedVariant.volumeMl} мл</dd>
                 </>
               )}
-              {product.weightG && (
+              {selectedVariant?.sku && (
                 <>
-                  <dt className="text-muted-foreground">Вес</dt>
-                  <dd>{product.weightG} г</dd>
+                  <dt className="text-muted-foreground">Артикул</dt>
+                  <dd className="font-mono text-xs">{selectedVariant.sku}</dd>
                 </>
               )}
-              <dt className="text-muted-foreground">Артикул</dt>
-              <dd className="font-mono text-xs">{product.sku}</dd>
             </dl>
 
             {/* Desktop CTA */}
@@ -111,7 +181,8 @@ function ProductPage() {
               <button
                 type="button"
                 onClick={handleAdd}
-                className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
+                disabled={!selectedVariant?.inStock}
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition-colors hover:bg-foreground/90 disabled:opacity-60"
               >
                 <ShoppingBag className="h-4 w-4" /> В корзину
               </button>
@@ -150,13 +221,13 @@ function ProductPage() {
                 )}
                 {tab === "areas" && (
                   <div className="space-y-3">
-                    {product.areas && (
+                    {product.areas && product.areas.length > 0 && (
                       <p>
                         <span className="text-foreground">Зоны: </span>
                         {product.areas.join(", ")}
                       </p>
                     )}
-                    {product.skinType && (
+                    {product.skinType && product.skinType.length > 0 && (
                       <p>
                         <span className="text-foreground">Тип кожи: </span>
                         {product.skinType.join(", ")}
@@ -168,9 +239,11 @@ function ProductPage() {
                         {product.target}
                       </p>
                     )}
-                    {!product.areas && !product.skinType && !product.target && (
-                      <p>Подходит для повседневного ухода.</p>
-                    )}
+                    {(!product.areas || product.areas.length === 0) &&
+                      (!product.skinType || product.skinType.length === 0) &&
+                      !product.target && (
+                        <p>Подходит для повседневного ухода.</p>
+                      )}
                   </div>
                 )}
               </div>
@@ -197,10 +270,17 @@ function ProductPage() {
           <button
             type="button"
             onClick={handleAdd}
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-4 py-3 text-sm font-medium text-background"
+            disabled={!selectedVariant?.inStock}
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-4 py-3 text-sm font-medium text-background disabled:opacity-60"
           >
             <ShoppingBag className="h-4 w-4" />
-            В корзину · <Price value={product.price * qty} />
+            В корзину
+            {currentPrice > 0 && (
+              <>
+                {" · "}
+                <Price value={currentPrice * qty} />
+              </>
+            )}
           </button>
         </div>
       </StickyBar>
