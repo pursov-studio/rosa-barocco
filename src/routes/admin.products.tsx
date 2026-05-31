@@ -84,11 +84,12 @@ function ProductsPage() {
                   <Button size="sm" variant="outline" onClick={() => setEdit({ ...(p as any), images: (p as any).images ?? [] })}>Изм.</Button>
                   <Button size="sm" variant="outline" onClick={() => {
                     const { id, created_at, updated_at, ...rest } = p as any;
+                    const suffix = Date.now().toString(36);
                     setEdit({
                       ...rest,
                       images: (p as any).images ?? [],
-                      slug: `${p.slug}-copy`,
-                      sku: p.sku ? `${p.sku}-COPY` : null,
+                      slug: `${p.slug}-copy-${suffix}`,
+                      sku: p.sku ? `${p.sku}-COPY-${suffix}` : null,
                       name: `${p.name} (копия)`,
                     });
                   }}>Копир.</Button>
