@@ -86,6 +86,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "ROSA&BAROCCO — Cosmetic Lab" },
+      { name: "description", content: "ROSA&BAROCCO is a modern, mobile-first e-commerce store for premium cosmetics." },
+      { property: "og:description", content: "ROSA&BAROCCO is a modern, mobile-first e-commerce store for premium cosmetics." },
+      { name: "twitter:description", content: "ROSA&BAROCCO is a modern, mobile-first e-commerce store for premium cosmetics." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/52f6e155-837a-4795-b626-86582605426a/id-preview-e97561b2--c5ff7089-bd1d-46a2-8d3b-29390f126c83.lovable.app-1780255177625.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/52f6e155-837a-4795-b626-86582605426a/id-preview-e97561b2--c5ff7089-bd1d-46a2-8d3b-29390f126c83.lovable.app-1780255177625.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
