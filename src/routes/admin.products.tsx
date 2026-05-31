@@ -113,7 +113,7 @@ function ProductsPage() {
               <Field label="Назначение"><Input value={edit.target ?? ""} onChange={(e) => setEdit({ ...edit, target: e.target.value })} /></Field>
               <Field label="Зоны (через запятую)"><Input value={edit.areas.join(", ")} onChange={(e) => setEdit({ ...edit, areas: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} /></Field>
               <Field label="Тип кожи (через запятую)"><Input value={edit.skin_type.join(", ")} onChange={(e) => setEdit({ ...edit, skin_type: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} /></Field>
-              <Field label="Sort"><Input type="number" value={edit.sort} onChange={(e) => setEdit({ ...edit, sort: Number(e.target.value) })} /></Field>
+              <Field label="Порядок сортировки"><Input type="number" value={edit.sort} onChange={(e) => setEdit({ ...edit, sort: Number(e.target.value) })} /></Field>
               <Field label="Фото (можно несколько)" full>
                 {edit.images.length > 0 && (
                   <div className="mb-2 flex flex-wrap gap-2">
