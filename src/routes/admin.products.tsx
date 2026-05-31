@@ -95,8 +95,8 @@ function ProductsPage() {
           <div className="max-h-[90vh] w-full max-w-2xl overflow-auto rounded-2xl bg-background p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <h2 className="font-display text-xl mb-4">{edit.id ? "Изменить товар" : "Новый товар"}</h2>
             <form className="grid gap-3 sm:grid-cols-2" onSubmit={(e) => { e.preventDefault(); save.mutate(edit); }}>
-              <Field label="Slug"><Input required value={edit.slug} onChange={(e) => setEdit({ ...edit, slug: e.target.value })} /></Field>
-              <Field label="SKU"><Input value={edit.sku ?? ""} onChange={(e) => setEdit({ ...edit, sku: e.target.value })} /></Field>
+              <Field label="Адрес в URL (латиницей)"><Input required value={edit.slug} onChange={(e) => setEdit({ ...edit, slug: e.target.value })} /></Field>
+              <Field label="Артикул"><Input value={edit.sku ?? ""} onChange={(e) => setEdit({ ...edit, sku: e.target.value })} /></Field>
               <Field label="Название" full><Input required value={edit.name} onChange={(e) => setEdit({ ...edit, name: e.target.value })} /></Field>
               <Field label="Категория">
                 <select required value={edit.category_slug} onChange={(e) => setEdit({ ...edit, category_slug: e.target.value })} className="h-10 w-full rounded-md border bg-background px-3 text-sm">
