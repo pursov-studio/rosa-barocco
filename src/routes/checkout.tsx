@@ -100,10 +100,13 @@ function CheckoutPage() {
   return (
     <>
       <Container className="py-10 pb-28 sm:py-14 lg:pb-14">
-        <h1 className="font-display text-3xl sm:text-4xl">Оформление заказа</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Менеджер свяжется по телефону для уточнения деталей.
-        </p>
+        <h1 className="font-display text-3xl sm:text-4xl">Оформление заявки</h1>
+        <div className="mt-4 rounded-2xl border border-foreground/15 bg-secondary/60 p-5">
+          <p className="font-medium">Оплата будет добавлена в будущих обновлениях.</p>
+          <p className="mt-1.5 text-sm text-muted-foreground">
+            Сейчас вы можете оставить заявку на покупку — мы свяжемся с вами для подтверждения и согласования оплаты.
+          </p>
+        </div>
 
         <form
           id="checkout-form"
