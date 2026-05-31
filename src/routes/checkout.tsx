@@ -174,7 +174,7 @@ function CheckoutPage() {
 
           <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
             <div className="rounded-2xl border border-border/60 bg-card p-5">
-              <h2 className="font-display text-lg">Ваш заказ</h2>
+            <h2 className="font-display text-lg">Ваша заявка</h2>
               <ul className="mt-3 space-y-2 text-sm">
                 {items.map((i) => (
                   <li key={i.variantId} className="flex justify-between gap-3">
