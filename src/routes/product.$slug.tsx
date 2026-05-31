@@ -308,6 +308,15 @@ function ProductPage() {
           </button>
         </div>
       </StickyBar>
+
+      {lightbox && (
+        <ImageLightbox
+          images={product.images}
+          index={activeImg}
+          onClose={() => setLightbox(false)}
+          onIndex={setActiveImg}
+        />
+      )}
     </>
   );
 }
