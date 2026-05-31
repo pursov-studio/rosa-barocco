@@ -100,14 +100,35 @@ function ProductPage() {
         </Link>
 
         <div className="mt-6 grid gap-8 md:grid-cols-2 md:gap-12">
-          <div className="overflow-hidden rounded-3xl bg-secondary/40">
-            <img
-              src={product.images[0]}
-              alt={product.name}
-              width={1200}
-              height={1200}
-              className="aspect-square w-full object-cover"
-            />
+          <div>
+            <button
+              type="button"
+              onClick={() => setLightbox(true)}
+              className="block w-full overflow-hidden rounded-3xl bg-secondary/40"
+              aria-label="Открыть фото"
+            >
+              <img
+                src={product.images[activeImg] ?? product.images[0]}
+                alt={product.name}
+                width={1200}
+                height={1200}
+                className="aspect-square w-full cursor-zoom-in object-contain p-4"
+              />
+            </button>
+            {product.images.length > 1 && (
+              <div className="mt-3 flex gap-2 overflow-x-auto">
+                {product.images.map((src, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setActiveImg(i)}
+                    className={`h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 bg-secondary/40 transition-colors ${i === activeImg ? "border-foreground" : "border-transparent opacity-70 hover:opacity-100"}`}
+                  >
+                    <img src={src} alt="" className="h-full w-full object-contain p-1" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div>
