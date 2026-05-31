@@ -1,19 +1,25 @@
 import { Link } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import type { Product } from "@/lib/catalog/types";
 import { Price } from "@/components/common/Price";
 import { getCategoryBySlug } from "@/lib/catalog/seed";
-import { useCart } from "@/lib/cart/store";
+import { formatPriceFrom, useCart } from "@/lib/cart/store";
 
 export function ProductCard({ product }: { product: Product }) {
   const add = useCart((s) => s.add);
   const category = getCategoryBySlug(product.categorySlug);
+  const variants = product.variants ?? [];
+  const hasVariants = variants.length > 0;
+  const onlyOne = variants.length === 1 ? variants[0] : null;
+  const priceFrom = product.price;
+  const positivePrices = variants.map((v) => v.price).filter((p) => p > 0);
+  const showFrom = positivePrices.length > 1 && new Set(positivePrices).size > 1;
 
   function handleQuickAdd(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    add(product, 1);
+    if (!onlyOne) return;
+    add(product, onlyOne, 1);
     toast.success("Добавлено в корзину", { description: product.name });
   }
 
@@ -40,19 +46,37 @@ export function ProductCard({ product }: { product: Product }) {
           </span>
         )}
         <h3 className="font-display text-base leading-snug">{product.name}</h3>
-        {product.volumeMl && (
+        {hasVariants ? (
+          <p className="text-xs text-muted-foreground">
+            {variants.map((v) => `${v.volumeMl} мл`).join(" · ")}
+          </p>
+        ) : product.volumeMl ? (
           <p className="text-xs text-muted-foreground">{product.volumeMl} мл</p>
-        )}
+        ) : null}
         <div className="mt-auto flex items-center justify-between pt-2">
-          <Price value={product.price} className="text-[15px] font-semibold" />
-          <button
-            type="button"
-            onClick={handleQuickAdd}
-            aria-label={`Добавить ${product.name} в корзину`}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-foreground text-background transition-transform hover:scale-105 active:scale-95"
-          >
-            <Plus className="h-4 w-4" />
-          </button>
+          {priceFrom > 0 ? (
+            showFrom ? (
+              <span className="text-[15px] font-semibold tabular-nums">
+                {formatPriceFrom(priceFrom)}
+              </span>
+            ) : (
+              <Price value={priceFrom} className="text-[15px] font-semibold" />
+            )
+          ) : (
+            <span className="text-xs text-muted-foreground">Цена уточняется</span>
+          )}
+          {onlyOne ? (
+            <button
+              type="button"
+              onClick={handleQuickAdd}
+              aria-label={`Добавить ${product.name} в корзину`}
+              className="rounded-full bg-foreground px-3 py-1.5 text-xs font-medium text-background transition-transform hover:scale-105 active:scale-95"
+            >
+              В корзину
+            </button>
+          ) : hasVariants ? (
+            <span className="text-xs text-muted-foreground">Выбрать объём →</span>
+          ) : null}
         </div>
       </div>
     </Link>

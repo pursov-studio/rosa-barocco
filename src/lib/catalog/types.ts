@@ -16,6 +16,15 @@ export interface Category {
   image?: string;
 }
 
+export interface ProductVariant {
+  id: string;
+  volumeMl: number;
+  price: number;
+  sku: string | null;
+  inStock: boolean;
+  sort: number;
+}
+
 export interface Product {
   id: string;
   slug: string;
@@ -36,6 +45,7 @@ export interface Product {
   inStock: boolean;
   isSet?: boolean;
   bundleItems?: string[];
+  variants?: ProductVariant[];
 }
 
 export interface Review {

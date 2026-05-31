@@ -28,16 +28,21 @@ export function CartItemRow({ item }: { item: CartItem }) {
       </Link>
       <div className="flex flex-1 flex-col gap-2">
         <div className="flex items-start justify-between gap-3">
-          <Link
-            to="/product/$slug"
-            params={{ slug: item.slug }}
-            className="font-display text-sm leading-snug sm:text-base"
-          >
-            {item.name}
-          </Link>
+          <div>
+            <Link
+              to="/product/$slug"
+              params={{ slug: item.slug }}
+              className="font-display text-sm leading-snug sm:text-base"
+            >
+              {item.name}
+            </Link>
+            {item.volumeMl && (
+              <div className="mt-0.5 text-xs text-muted-foreground">{item.volumeMl} мл</div>
+            )}
+          </div>
           <button
             type="button"
-            onClick={() => remove(item.productId)}
+            onClick={() => remove(item.variantId)}
             aria-label="Удалить"
             className="text-muted-foreground transition-colors hover:text-destructive"
           >
@@ -48,7 +53,7 @@ export function CartItemRow({ item }: { item: CartItem }) {
           <div className="inline-flex items-center rounded-full border border-border">
             <button
               type="button"
-              onClick={() => updateQty(item.productId, item.qty - 1)}
+              onClick={() => updateQty(item.variantId, item.qty - 1)}
               className="flex h-8 w-8 items-center justify-center text-muted-foreground hover:text-foreground"
               aria-label="Минус"
             >
@@ -57,7 +62,7 @@ export function CartItemRow({ item }: { item: CartItem }) {
             <span className="w-7 text-center text-sm tabular-nums">{item.qty}</span>
             <button
               type="button"
-              onClick={() => updateQty(item.productId, item.qty + 1)}
+              onClick={() => updateQty(item.variantId, item.qty + 1)}
               className="flex h-8 w-8 items-center justify-center text-muted-foreground hover:text-foreground"
               aria-label="Плюс"
             >

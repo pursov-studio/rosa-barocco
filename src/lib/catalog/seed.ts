@@ -1,15 +1,5 @@
 import type { Category, Product, Review } from "./types";
 
-import platinumLux110 from "@/assets/products/platinum-lux-110.jpg";
-import goldChic110 from "@/assets/products/gold-chic-110.jpg";
-import goldChic100 from "@/assets/products/gold-chic-100.jpg";
-import platinum100 from "@/assets/products/platinum-100.jpg";
-import gold100 from "@/assets/products/gold-100.jpg";
-import silverUniversal from "@/assets/products/silver-universal.jpg";
-import silverAntiAcne from "@/assets/products/silver-anti-acne.jpg";
-import setDiamantLux from "@/assets/products/set-diamant-lux.jpg";
-import setDiamantCollection from "@/assets/products/set-diamant-collection.jpg";
-
 import catSilver from "@/assets/category-silver.jpg";
 import catGold from "@/assets/category-gold.jpg";
 import catPlatinum from "@/assets/category-platinum.jpg";
