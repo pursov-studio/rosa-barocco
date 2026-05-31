@@ -72,7 +72,9 @@ export function normalizeProduct(row: DBProduct): Product {
     skinType: row.skin_type ?? [],
     usage: row.usage ?? undefined,
     target: row.target ?? undefined,
-    images: [row.image_url || PLACEHOLDER_IMG],
+    images: (row.images && row.images.length > 0)
+      ? row.images.filter(Boolean)
+      : [row.image_url || PLACEHOLDER_IMG],
     inStock: variants.length
       ? variants.some((v) => v.inStock)
       : row.in_stock,
