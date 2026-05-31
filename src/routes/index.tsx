@@ -148,7 +148,7 @@ function HomePage() {
           <div className="order-1 md:order-2">
             <div className="relative aspect-[5/4] overflow-hidden rounded-3xl md:aspect-[4/5]">
               <img
-                src={heroImage}
+                src={heroSrc}
                 alt="ROSA&BAROCCO — флакон-мист"
                 width={1600}
                 height={1200}
