@@ -8,10 +8,21 @@ import { reviews } from "@/lib/catalog/seed";
 import {
   listCategoriesPublic,
   listProductsPublic,
+  getSiteContent,
 } from "@/lib/catalog/catalog.functions";
 import type { Category } from "@/lib/catalog/types";
-import heroImage from "@/assets/hero.jpg";
+import heroImage from "@/assets/hero-main.png";
+import catSilver from "@/assets/category-silver.jpg";
+import catGold from "@/assets/category-gold.jpg";
+import catPlatinum from "@/assets/category-platinum.jpg";
 import { ArrowRight, Leaf, Sparkles, Truck } from "lucide-react";
+
+const metalFallback: Record<Category["metal"], string> = {
+  platinum: catPlatinum,
+  gold: catGold,
+  silver: catSilver,
+  mix: catPlatinum,
+};
 
 const categoriesQuery = queryOptions({
   queryKey: ["categories"],
@@ -21,6 +32,11 @@ const categoriesQuery = queryOptions({
 const productsQuery = queryOptions({
   queryKey: ["products"],
   queryFn: () => listProductsPublic(),
+});
+
+const homeContentQuery = queryOptions({
+  queryKey: ["site-content", "home"],
+  queryFn: () => getSiteContent({ data: { key: "home" } }),
 });
 
 export const Route = createFileRoute("/")({
@@ -41,6 +57,7 @@ export const Route = createFileRoute("/")({
     Promise.all([
       context.queryClient.ensureQueryData(categoriesQuery),
       context.queryClient.ensureQueryData(productsQuery),
+      context.queryClient.ensureQueryData(homeContentQuery),
     ]),
   errorComponent: ({ error }) => (
     <Container className="py-20 text-center">
@@ -57,13 +74,16 @@ function normalizeCategory(row: any): Category {
     shortName: row.short_name ?? row.shortName ?? row.name,
     metal: row.metal,
     description: row.description ?? undefined,
-    image: row.image_url ?? undefined,
+    image: row.image_url ?? metalFallback[row.metal as Category["metal"]],
   };
 }
 
 function HomePage() {
   const { data: rawCategories } = useSuspenseQuery(categoriesQuery);
   const { data: products } = useSuspenseQuery(productsQuery);
+  const { data: home } = useSuspenseQuery(homeContentQuery);
+
+  const heroSrc = (home as any)?.heroImage || heroImage;
 
   const categories = (rawCategories ?? []).map(normalizeCategory);
 
@@ -128,7 +148,7 @@ function HomePage() {
           <div className="order-1 md:order-2">
             <div className="relative aspect-[5/4] overflow-hidden rounded-3xl md:aspect-[4/5]">
               <img
-                src={heroImage}
+                src={heroSrc}
                 alt="ROSA&BAROCCO — флакон-мист"
                 width={1600}
                 height={1200}
