@@ -74,14 +74,14 @@ function ProductsPage() {
           <tbody>
             {list.data?.map((p) => (
               <tr key={p.id} className="border-t">
-                <td className="px-3 py-2">{p.image_url ? <img src={p.image_url} alt="" className="h-12 w-12 rounded object-cover" /> : <div className="h-12 w-12 rounded bg-muted" />}</td>
+                <td className="px-3 py-2">{(p.images?.[0] || p.image_url) ? <img src={p.images?.[0] || p.image_url} alt="" className="h-12 w-12 rounded bg-secondary/40 object-contain" /> : <div className="h-12 w-12 rounded bg-muted" />}</td>
                 <td className="px-3 py-2">{p.name}</td>
                 <td className="px-3 py-2 font-mono text-xs">{p.slug}</td>
                 <td className="px-3 py-2 text-xs">{p.category_slug}</td>
                 <td className="px-3 py-2">{p.price} ₽</td>
                 <td className="px-3 py-2">{p.in_stock ? "✓" : "—"}</td>
                 <td className="px-3 py-2 text-right space-x-1">
-                  <Button size="sm" variant="outline" onClick={() => setEdit(p as any)}>Изм.</Button>
+                  <Button size="sm" variant="outline" onClick={() => setEdit({ ...(p as any), images: (p as any).images ?? [] })}>Изм.</Button>
                   <Button size="sm" variant="ghost" onClick={() => { if (confirm("Удалить?")) remove.mutate(p.id); }}>×</Button>
                 </td>
               </tr>
