@@ -54,7 +54,7 @@ function AdminLayout() {
 
   if (pathname === "/admin/login") return <Outlet />;
 
-  if (status === "loading") {
+  if (status === "loading" || status === "noauth") {
     return <div className="min-h-screen flex items-center justify-center text-sm text-muted-foreground">Загрузка…</div>;
   }
   if (status === "noadmin") {
