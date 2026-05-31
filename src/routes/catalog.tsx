@@ -1,9 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { Container } from "@/components/common/Container";
 import { ProductCard } from "@/components/catalog/ProductCard";
-import { getCategoryBySlug, products } from "@/lib/catalog/seed";
+import { listProductsPublic } from "@/lib/catalog/catalog.functions";
+import { getCategoryBySlug } from "@/lib/catalog/seed";
 import { cn } from "@/lib/utils";
+
+const productsQuery = queryOptions({
+  queryKey: ["products"],
+  queryFn: () => listProductsPublic(),
+});
 
 export const Route = createFileRoute("/catalog")({
   head: () => ({
@@ -18,10 +25,17 @@ export const Route = createFileRoute("/catalog")({
       { property: "og:description", content: "Коллоидные растворы серебра, золота и платины." },
     ],
   }),
+  loader: ({ context }) => context.queryClient.ensureQueryData(productsQuery),
+  errorComponent: ({ error }) => (
+    <Container className="py-20 text-center">
+      <p className="text-muted-foreground">Не удалось загрузить каталог: {error.message}</p>
+    </Container>
+  ),
   component: CatalogPage,
 });
 
 function CatalogPage() {
+  const { data: products } = useSuspenseQuery(productsQuery);
   const [active, setActive] = useState<string>("all");
 
   const groups = [
