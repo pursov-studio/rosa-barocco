@@ -1,97 +1,81 @@
+# План: контентная база ROSA&BAROCCO + варианты объёма
 
-# План: Админ-панель, заказы, Робокасса
+## Что получится
+- 6 карточек товара: PLATINUM LUX, GOLD CHIC, SILVER UNIVERSAL, SILVER ANTI-ACNE, Набор ROSA&BAROCCO (trio), плюс отдельная карточка «Набор» одна (50/100 мл — варианты внутри одной карточки набора).
+- На каждой карточке переключатель **50 мл / 100 мл**, цена/SKU/наличие обновляются от выбранного варианта.
+- Все старые тестовые товары будут удалены, залиты только эти. Цены везде = 0 (заглушка), правятся в админке.
+- Фото — оставляю плейсхолдеры, вы зальёте через `/admin/products`.
 
-## 1. Бэкенд (Lovable Cloud)
+## Структура данных (миграция)
 
-Включаем Cloud. Создаём схему БД:
+Добавляю таблицу вариантов, чтобы один товар = одна карточка с переключателем:
 
-- `categories` (id, slug, title, description, sort, updated_at)
-- `products` (id, slug, category_id, title, description, price, image_url, in_stock, sort, updated_at)
-- `orders` (id, public_id, name, phone, email, city, delivery_method, address, comment, items jsonb, subtotal, payment_method, payment_status, status, created_at, updated_at)
-- `site_content` (key text PK, value jsonb, updated_at) — для hero, доставки, контактов, сотрудничества
-- `app_role` enum (`admin`, `editor`) + `user_roles` (user_id, role) + security-definer `has_role()`
-- `app_settings` (key text PK, value jsonb) — для Робокассы (MerchantLogin, Password1, Password2, test_mode)
-
-RLS:
-- `products`, `categories`, `site_content`: SELECT для `anon`+`authenticated`; INSERT/UPDATE/DELETE только `has_role(auth.uid(),'admin')`.
-- `orders`: INSERT для `anon` (создание заказа гостем); SELECT/UPDATE только admin.
-- `user_roles`, `app_settings`: только admin.
-
-GRANT'ы выставляем явно для каждой таблицы.
-
-## 2. Авторизация
-
-- Email/пароль (Cloud Auth).
-- Страница `/admin/login`.
-- Layout `_admin` с `beforeLoad`: проверка `getUser()` + `has_role`. Иначе redirect на `/admin/login`.
-- Несколько админов: вручную добавляются строки в `user_roles` (через миграцию seed первого админа, далее из UI «Команда»).
-
-## 3. Server functions (`createServerFn`)
-
-- `admin/products.functions.ts`: list/get/upsert/delete + upload фото в Supabase Storage (`product-images` bucket, public).
-- `admin/categories.functions.ts`: list/upsert/delete.
-- `admin/content.functions.ts`: get/set по ключу (`home_hero`, `delivery_page`, `contacts_page`, `cooperation_page`).
-- `admin/orders.functions.ts`: list (с фильтрами по статусу/дате), get, updateStatus, stats (для дашборда).
-- `admin/settings.functions.ts`: get/set Робокассы.
-- `public/orders.functions.ts`: `createOrder` (вызывается из `/checkout`), пишет в `orders` через admin client.
-
-## 4. Админ-роуты
-
-```
-/admin/login
-/admin                       — дашборд (KPI + последние заказы)
-/admin/orders                — таблица заказов, фильтры по статусу
-/admin/orders/$id            — карточка заказа, смена статуса (new/processing/paid/shipped/done/cancelled)
-/admin/products              — список + поиск
-/admin/products/new
-/admin/products/$id          — редактор (категория, цена, описание, фото)
-/admin/categories            — CRUD категорий
-/admin/content               — табы: Главная / Доставка / Контакты / Сотрудничество
-/admin/settings              — поля Робокассы + переключатель test/live
-/admin/team                  — список user_roles, добавить admin по email
+```text
+product_variants
+  id            uuid pk
+  product_id    uuid → products.id  (on delete cascade)
+  volume_ml     int                 (50 | 100)
+  price         int  default 0
+  sku           text
+  in_stock      bool default true
+  sort          int  default 0
+  created_at, updated_at
+  UNIQUE (product_id, volume_ml)
 ```
 
-Все под `_admin` layout (sidebar + проверка роли).
+- `products.price`, `products.volume_ml`, `products.sku` остаются в схеме (для обратной совместимости), но новые продукты не используют их напрямую — цена/наличие берутся из вариантов. Минимальная цена варианта показывается в каталоге как «от …».
+- RLS: `Public read variants` (anon+auth), `Admins write variants` (через `has_role`). GRANT-ы для anon/authenticated/service_role.
 
-## 5. Дашборд
+## Контент (что льём)
 
-KPI-карточки: заказов за 7/30 дней, выручка, средний чек, % оплаченных. Список последних 10 заказов с быстрой сменой статуса.
+Категории (уже есть слаги): `platinum-lux`, `gold-chic`, `silver-universal`, `silver-anti-acne`, `sets`.
 
-## 6. Публичный сайт — переход на БД
+Продукты (6):
 
-Минимальные правки:
-- `catalog.tsx`, `catalog.$category.tsx`, `product.$slug.tsx`, `index.tsx`, `delivery.tsx`, `cooperation.tsx`, `contacts.tsx` — читают из server functions (loader через TanStack Query), `seed.ts` остаётся только как первичный seed в миграции.
-- `checkout.tsx` — вместо mock `submitForm("order")` вызывает `createOrder`. Добавляется radio «Способ оплаты»: «При получении» и «Робокасса (скоро)». Робокасса пока disabled с подсказкой «Будет доступна после одобрения».
+| Slug | Категория | Варианты |
+|---|---|---|
+| `platinum-lux` | platinum-lux | 50 мл, 100 мл |
+| `gold-chic` | gold-chic | 50 мл, 100 мл |
+| `silver-universal` | silver-universal | 50 мл, 100 мл |
+| `silver-anti-acne` | silver-anti-acne | 50 мл, 100 мл |
+| `set-trio` | sets | 50 мл (trio 3×50), 100 мл (trio 3×100), `is_set=true` |
 
-## 7. Робокасса — заглушка
+Каждому продукту заливаю: `name`, `short_description`, `composition`, `usage`, `areas`, `skin_type`, `target` (из документа дословно, безопасные косметические формулировки).
 
-- В `/admin/settings`: поля `merchant_login`, `password_1`, `password_2`, `test_mode` (boolean). Сохраняются в `app_settings`.
-- В `checkout` радио «Робокасса» помечено как disabled (или активно, но при сабмите создаёт заказ со статусом `pending_payment` и показывает «Перенаправление отключено — ожидаем одобрения»).
-- Server function `payment/robokassa.functions.ts` — каркас: `createPaymentUrl(orderId)` собирает подпись по MD5(MerchantLogin:OutSum:InvId:Password1), возвращает URL. Сейчас не вызывается из UI, но готов.
-- Server route `/api/public/robokassa/result` — каркас: принимает ResultURL, проверяет подпись (Password2), помечает заказ `paid`. Закомментированный вызов, чтобы не падал без ключей.
+Для набора `bundle_items` = `['platinum-lux','gold-chic','silver-universal']`.
 
-## 8. Что НЕ делаем сейчас
+Цены всех вариантов = 0 (пометка «Цена уточняется» в UI, когда price === 0).
 
-- Не подключаем реальный редирект на Робокассу (включится после получения ключей пользователем).
-- Не меняем дизайн витрины.
-- Не трогаем zustand-корзину.
-- Не добавляем email-уведомления.
+## Изменения в коде
 
-## 9. Технические детали
+1. **Миграция** (`product_variants` + GRANT + RLS + триггер `updated_at`).
+2. **Серверные функции** (`src/lib/catalog/catalog.functions.ts`, `admin.functions.ts`):
+   - `listProductsPublic`/`getProductBySlugPublic` подтягивают варианты (одним join'ом, select `*, product_variants(*)`).
+   - `adminListProducts`, `adminUpsertProduct`, `adminUpsertVariant`, `adminDeleteVariant`.
+   - `createOrder` принимает `variantId`, проверяет цену из БД (как сейчас — против подмены).
+3. **Типы** (`src/lib/catalog/types.ts`): добавить `ProductVariant`, у `Product` — `variants: ProductVariant[]`. Поле `price`/`volumeMl` становится derived (min/selected).
+4. **Корзина** (`src/lib/cart/store.ts`): ключ позиции = `variantId`, в `CartItem` добавить `variantId`, `volumeMl`. Миграция persist: при чтении старой версии — очистка корзины (`version: 2`).
+5. **UI**:
+   - `ProductCard`: показывать «от {minPrice}» (или «Цена уточняется»), плюс кликается на PDP. Быстрый «+» убрать или открывать PDP, чтобы выбрать объём.
+   - `product.$slug.tsx`: селектор 50/100 мл (сегмент-контрол), цена/SKU/CTA реагируют на выбор.
+   - `cart.tsx` / `CartItemRow`: показывать объём в названии позиции.
+   - `checkout.tsx`: передавать `variantId` в `createOrder`.
+6. **Админка** (`admin.products.tsx`):
+   - Внутри модалки товара — секция «Варианты» (таблица: объём / цена / SKU / в наличии / sort, добавить/удалить).
+   - Скрываем старые поля `price`/`volume_ml` для новых товаров.
+7. **Seed-сидер**: одноразовая серверная функция `seedCatalog` (вызывается из админки кнопкой «Залить базу», `requireAdmin`):
+   - `DELETE FROM products; DELETE FROM product_variants;`
+   - INSERT 6 продуктов + варианты по документу.
+   - Описания, состав, применение — точно из docx.
 
-- Storage bucket `product-images` public, upload только admin (RLS на storage.objects).
-- Первый админ: после включения Cloud прошу пользователя зарегистрироваться через `/admin/login`, затем миграцией INSERT в `user_roles` для его user_id (попрошу email).
-- Все списки в админке — TanStack Query + server functions с `requireSupabaseAuth` + проверкой роли внутри handler'а.
+## Что НЕ делаю в этом плане
+- Не генерирую фото (вы зальёте сами).
+- Не правлю цены — все 0, через админку.
+- Не трогаю SILVER ANTI-ACNE как часть набора (в документе явно: только как отдельный продукт).
 
-## Шаги реализации
+## Технические детали
+- Миграция данных корзины: бампнем `version: 2` в zustand persist — старые корзины очистятся, иначе сломается checkout без variantId.
+- В `createOrder` цена 0 разрешена (заглушка), но добавлю проверку: если все варианты в корзине 0 — позволяем (тестовый режим), позже включим валидацию `price > 0`.
+- Триггер `set_updated_at` уже есть в проекте — переиспользую для `product_variants`.
 
-1. Включить Lovable Cloud.
-2. Миграция: enums, таблицы, RLS, GRANT'ы, security-definer `has_role`, seed категорий/товаров из `seed.ts`, seed site_content.
-3. Storage bucket + политики.
-4. Auth pages (`/admin/login`, `_admin` layout с гейтом роли).
-5. Server functions (products, categories, orders, content, settings, public createOrder).
-6. Админ-страницы (sidebar, дашборд, CRUD товаров/категорий/контента, заказы, настройки, команда).
-7. Переключить публичные страницы на чтение из БД.
-8. Обновить checkout: реальное создание заказа + radio оплаты с Робокассой-заглушкой.
-9. Каркас Робокассы (functions + public route, без активации).
-10. Попросить email первого админа и зашить роль миграцией.
+После одобрения: миграция → код → запуск сидера через админку.
