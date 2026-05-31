@@ -34,6 +34,11 @@ const productsQuery = queryOptions({
   queryFn: () => listProductsPublic(),
 });
 
+const homeContentQuery = queryOptions({
+  queryKey: ["site-content", "home"],
+  queryFn: () => getSiteContent({ data: { key: "home" } }),
+});
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -52,6 +57,7 @@ export const Route = createFileRoute("/")({
     Promise.all([
       context.queryClient.ensureQueryData(categoriesQuery),
       context.queryClient.ensureQueryData(productsQuery),
+      context.queryClient.ensureQueryData(homeContentQuery),
     ]),
   errorComponent: ({ error }) => (
     <Container className="py-20 text-center">
