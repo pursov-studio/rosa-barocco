@@ -1,11 +1,27 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { Container } from "@/components/common/Container";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { CategoryCard } from "@/components/catalog/CategoryCard";
 import { ProductCard } from "@/components/catalog/ProductCard";
-import { categories, products, reviews } from "@/lib/catalog/seed";
+import { reviews } from "@/lib/catalog/seed";
+import {
+  listCategoriesPublic,
+  listProductsPublic,
+} from "@/lib/catalog/catalog.functions";
+import type { Category } from "@/lib/catalog/types";
 import heroImage from "@/assets/hero.jpg";
 import { ArrowRight, Leaf, Sparkles, Truck } from "lucide-react";
+
+const categoriesQuery = queryOptions({
+  queryKey: ["categories"],
+  queryFn: () => listCategoriesPublic(),
+});
+
+const productsQuery = queryOptions({
+  queryKey: ["products"],
+  queryFn: () => listProductsPublic(),
+});
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -21,17 +37,48 @@ export const Route = createFileRoute("/")({
       { property: "og:image", content: heroImage },
     ],
   }),
+  loader: ({ context }) =>
+    Promise.all([
+      context.queryClient.ensureQueryData(categoriesQuery),
+      context.queryClient.ensureQueryData(productsQuery),
+    ]),
+  errorComponent: ({ error }) => (
+    <Container className="py-20 text-center">
+      <p className="text-muted-foreground">Не удалось загрузить данные: {error.message}</p>
+    </Container>
+  ),
   component: HomePage,
 });
 
-const heroCategories = categories.filter((c) =>
-  ["platinum-lux", "gold-chic", "silver-universal"].includes(c.slug),
-);
-const highlights = products.filter((p) =>
-  ["platinum-lux-110", "gold-chic-110", "silver-universal", "set-diamant-collection"].includes(p.slug),
-);
+function normalizeCategory(row: any): Category {
+  return {
+    slug: row.slug,
+    name: row.name,
+    shortName: row.short_name ?? row.shortName ?? row.name,
+    metal: row.metal,
+    description: row.description ?? undefined,
+    image: row.image_url ?? undefined,
+  };
+}
 
 function HomePage() {
+  const { data: rawCategories } = useSuspenseQuery(categoriesQuery);
+  const { data: products } = useSuspenseQuery(productsQuery);
+
+  const categories = (rawCategories ?? []).map(normalizeCategory);
+
+  // Pick one representative category per metal for the hero strip
+  const pickByMetal = (metal: Category["metal"]) =>
+    categories.find((c) => c.metal === metal);
+  const heroCategories = [
+    pickByMetal("platinum"),
+    pickByMetal("gold"),
+    pickByMetal("silver"),
+  ].filter(Boolean) as Category[];
+
+  // Highlights: take first 4 products by sort order
+  const highlights = products.slice(0, 4);
+
   return (
     <div>
       {/* Hero */}
@@ -93,47 +140,51 @@ function HomePage() {
       </section>
 
       {/* Categories */}
-      <section className="py-16 sm:py-20">
-        <Container>
-          <SectionHeading
-            eyebrow="Коллекции"
-            title="Серебро, золото и платина"
-            description="Три направления ухода. Минимализм состава и&nbsp;понятный ритуал применения."
-          />
-          <div className="grid gap-4 sm:grid-cols-3 sm:gap-5">
-            {heroCategories.map((c) => (
-              <CategoryCard key={c.slug} category={c} />
-            ))}
-          </div>
-        </Container>
-      </section>
+      {heroCategories.length > 0 && (
+        <section className="py-16 sm:py-20">
+          <Container>
+            <SectionHeading
+              eyebrow="Коллекции"
+              title="Серебро, золото и платина"
+              description="Три направления ухода. Минимализм состава и&nbsp;понятный ритуал применения."
+            />
+            <div className="grid gap-4 sm:grid-cols-3 sm:gap-5">
+              {heroCategories.map((c) => (
+                <CategoryCard key={c.slug} category={c} />
+              ))}
+            </div>
+          </Container>
+        </section>
+      )}
 
       {/* Highlights */}
-      <section className="py-16 sm:py-20">
-        <Container>
-          <div className="mb-8 flex items-end justify-between gap-4 sm:mb-10">
-            <SectionHeading
-              eyebrow="Бестселлеры"
-              title="Самые востребованные"
-              className="mb-0"
-            />
-            <Link
-              to="/catalog"
-              className="hidden text-sm text-primary hover:text-primary/80 sm:inline-flex"
-            >
-              Весь каталог →
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
-            {highlights.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
-          <div className="mt-8 text-center sm:hidden">
-            <Link to="/catalog" className="text-sm text-primary">Весь каталог →</Link>
-          </div>
-        </Container>
-      </section>
+      {highlights.length > 0 && (
+        <section className="py-16 sm:py-20">
+          <Container>
+            <div className="mb-8 flex items-end justify-between gap-4 sm:mb-10">
+              <SectionHeading
+                eyebrow="Бестселлеры"
+                title="Самые востребованные"
+                className="mb-0"
+              />
+              <Link
+                to="/catalog"
+                className="hidden text-sm text-primary hover:text-primary/80 sm:inline-flex"
+              >
+                Весь каталог →
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
+              {highlights.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+            <div className="mt-8 text-center sm:hidden">
+              <Link to="/catalog" className="text-sm text-primary">Весь каталог →</Link>
+            </div>
+          </Container>
+        </section>
+      )}
 
       {/* About strip */}
       <section className="bg-secondary/40 py-16 sm:py-20">
