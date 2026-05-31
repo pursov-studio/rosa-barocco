@@ -130,19 +130,23 @@ function ProductsPage() {
                     ))}
                   </div>
                 )}
-                <input
-                  type="file" accept="image/*" multiple
-                  onChange={async (e) => {
-                    const files = Array.from(e.target.files ?? []); if (!files.length) return;
-                    try {
-                      const urls = await Promise.all(files.map(onUpload));
-                      const next = [...edit.images, ...urls];
-                      setEdit({ ...edit, images: next, image_url: edit.image_url ?? next[0] ?? null });
-                      toast.success(`Загружено: ${urls.length}`);
-                    } catch (err: any) { toast.error(err.message); }
-                    e.target.value = "";
-                  }}
-                />
+                <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground">
+                  <span>Выбрать файлы…</span>
+                  <input
+                    type="file" accept="image/*" multiple className="hidden"
+                    onChange={async (e) => {
+                      const files = Array.from(e.target.files ?? []); if (!files.length) return;
+                      try {
+                        const urls = await Promise.all(files.map(onUpload));
+                        const next = [...edit.images, ...urls];
+                        setEdit({ ...edit, images: next, image_url: edit.image_url ?? next[0] ?? null });
+                        toast.success(`Загружено: ${urls.length}`);
+                      } catch (err: any) { toast.error(err.message); }
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+                <p className="mt-1 text-xs text-muted-foreground">Можно выбрать несколько файлов. Рекомендуемый размер 1086×1448.</p>
                 <Input className="mt-2" placeholder="или вставьте URL и нажмите Enter" onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
