@@ -111,9 +111,7 @@ async function sendOrderEmail(o: {
   items: Array<{ name: string; volumeMl: number; sku: string | null; price: number; qty: number }>;
   subtotal: number;
 }) {
-  const LOVABLE_API_KEY = process.env.LOVABLE_API_KEY;
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
-  if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
   if (!RESEND_API_KEY) throw new Error("RESEND_API_KEY is not configured");
 
   const deliveryLabels: Record<string, string> = {
@@ -150,16 +148,20 @@ async function sendOrderEmail(o: {
   <p style="margin-top:18px;color:#666;font-size:12px">Заявка оформлена на сайте ROSA&amp;BAROCCO. Оплата пока не подключена — свяжитесь с клиентом для согласования.</p>
   </body></html>`;
 
-  const res = await fetch("https://connector-gateway.lovable.dev/resend/emails", {
+  const fromAddress = process.env.RESEND_FROM || "ROSA&BAROCCO <onboarding@resend.dev>";
+  const toAddress = process.env.ORDER_NOTIFY_EMAIL || "rosabarocco@ya.ru";
+
+  // Прямой вызов Resend API (без gateway Lovable), чтобы работало с любого сервера,
+  // включая VPS в РФ без доступа к *.lovable.dev.
+  const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${LOVABLE_API_KEY}`,
-      "X-Connection-Api-Key": RESEND_API_KEY,
+      Authorization: `Bearer ${RESEND_API_KEY}`,
     },
     body: JSON.stringify({
-      from: "ROSA&BAROCCO <onboarding@resend.dev>",
-      to: ["rosabarocco@ya.ru"],
+      from: fromAddress,
+      to: [toAddress],
       reply_to: o.email || undefined,
       subject: `Новая заявка ${o.public_id} — ${o.name}`,
       html,
