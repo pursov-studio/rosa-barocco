@@ -27,7 +27,6 @@ import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminContentRouteImport } from './routes/admin.content'
-import { Route as ApiPublicExportSecretsRouteImport } from './routes/api/public/export-secrets'
 
 const DeliveryRoute = DeliveryRouteImport.update({
   id: '/delivery',
@@ -119,11 +118,6 @@ const AdminContentRoute = AdminContentRouteImport.update({
   path: '/content',
   getParentRoute: () => AdminRoute,
 } as any)
-const ApiPublicExportSecretsRoute = ApiPublicExportSecretsRouteImport.update({
-  id: '/api/public/export-secrets',
-  path: '/api/public/export-secrets',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -144,7 +138,6 @@ export interface FileRoutesByFullPath {
   '/checkout/success': typeof CheckoutSuccessRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/': typeof AdminIndexRoute
-  '/api/public/export-secrets': typeof ApiPublicExportSecretsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -164,7 +157,6 @@ export interface FileRoutesByTo {
   '/checkout/success': typeof CheckoutSuccessRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin': typeof AdminIndexRoute
-  '/api/public/export-secrets': typeof ApiPublicExportSecretsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -186,7 +178,6 @@ export interface FileRoutesById {
   '/checkout/success': typeof CheckoutSuccessRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/': typeof AdminIndexRoute
-  '/api/public/export-secrets': typeof ApiPublicExportSecretsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -209,7 +200,6 @@ export interface FileRouteTypes {
     | '/checkout/success'
     | '/product/$slug'
     | '/admin/'
-    | '/api/public/export-secrets'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -229,7 +219,6 @@ export interface FileRouteTypes {
     | '/checkout/success'
     | '/product/$slug'
     | '/admin'
-    | '/api/public/export-secrets'
   id:
     | '__root__'
     | '/'
@@ -250,7 +239,6 @@ export interface FileRouteTypes {
     | '/checkout/success'
     | '/product/$slug'
     | '/admin/'
-    | '/api/public/export-secrets'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -263,7 +251,6 @@ export interface RootRouteChildren {
   CooperationRoute: typeof CooperationRoute
   DeliveryRoute: typeof DeliveryRoute
   ProductSlugRoute: typeof ProductSlugRoute
-  ApiPublicExportSecretsRoute: typeof ApiPublicExportSecretsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -394,13 +381,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminContentRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/api/public/export-secrets': {
-      id: '/api/public/export-secrets'
-      path: '/api/public/export-secrets'
-      fullPath: '/api/public/export-secrets'
-      preLoaderRoute: typeof ApiPublicExportSecretsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -459,7 +439,6 @@ const rootRouteChildren: RootRouteChildren = {
   CooperationRoute: CooperationRoute,
   DeliveryRoute: DeliveryRoute,
   ProductSlugRoute: ProductSlugRoute,
-  ApiPublicExportSecretsRoute: ApiPublicExportSecretsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
